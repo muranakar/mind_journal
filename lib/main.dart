@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 // import 'package:intl/intl.dart';
 import 'package:mind_journal/screen/calendar.dart';
 import 'package:mind_journal/screen/diaryList.dart';
-import 'package:mind_journal/screen/favorites.dart';
 import 'package:mind_journal/screen/home.dart';
-import 'package:mind_journal/screen/sample1.dart';
 import 'package:mind_journal/screen/settings.dart';
 
 void main() {
@@ -67,10 +65,6 @@ class _NavigationExampleState extends State<NavigationExample> {
             label: 'List',
           ),
           NavigationDestination(
-            icon: Icon(Icons.favorite_border, color: Colors.orange),
-            label: 'Favorite',
-          ),
-          NavigationDestination(
             icon: Icon(
               Icons.settings,
               color: Colors.blueGrey,
@@ -106,15 +100,6 @@ class _NavigationExampleState extends State<NavigationExample> {
           child: SizedBox.expand(
             child: Center(
               child: DiaryListScreen(),
-            ),
-          ),
-        ),
-        Card(
-          shadowColor: Colors.transparent,
-          margin: const EdgeInsets.all(8.0),
-          child: SizedBox.expand(
-            child: Center(
-              child: FavoriteDiaryListScreen(),
             ),
           ),
         ),
