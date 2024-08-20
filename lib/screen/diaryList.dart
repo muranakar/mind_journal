@@ -12,6 +12,15 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
   late Future<List<Diary>> _diaryList;
   String _searchQuery = '';
   bool _showFavoritesOnly = false; // お気に入りのみ表示するかどうか
+  bool _isDescending = true; // 昇順・降順の切り替え
+
+  // 定数の宣言
+  static const Color appBarIconColor = Color(0xFF333333);
+  static const Color searchHintColor = Color(0xFF888888);
+  static const Color favoriteIconColorActive = Color(0xFFFE91A1);
+  static const Color favoriteIconColorInactive = Color(0xFF888888);
+  static const double appBarElevation = 0.0;
+  static const double appBarFontSize = 18.0;
 
   @override
   void initState() {
@@ -46,6 +55,12 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
     });
   }
 
+  void _toggleSortOrder() {
+    setState(() {
+      _isDescending = !_isDescending;
+    });
+  }
+
   List<Diary> _filterDiaries(List<Diary> diaries) {
     List<Diary> filteredDiaries = diaries;
     if (_showFavoritesOnly) {
@@ -60,6 +75,10 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
         return titleMatch || contentMatch || tagsMatch;
       }).toList();
     }
+    // 日記を昇順または降順に並び替える
+    filteredDiaries.sort((a, b) => _isDescending
+        ? b.createdAt.compareTo(a.createdAt)
+        : a.createdAt.compareTo(b.createdAt));
     return filteredDiaries;
   }
 
@@ -67,13 +86,14 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
+        elevation: appBarElevation,
         centerTitle: true,
-        iconTheme: IconThemeData(color: Color(0xFF333333)),
+        iconTheme: IconThemeData(color: appBarIconColor),
         title: TextField(
           decoration: InputDecoration(
             hintText: 'キーワード検索できます🔍',
             border: InputBorder.none,
+            hintStyle: TextStyle(color: searchHintColor),
           ),
           onChanged: _updateSearchQuery,
         ),
@@ -81,9 +101,16 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
           IconButton(
             icon: Icon(
               _showFavoritesOnly ? Icons.favorite : Icons.favorite_border,
-              color: _showFavoritesOnly ? Color(0xFFFE91A1) : Color(0xFF888888),
+              color: _showFavoritesOnly ? favoriteIconColorActive : favoriteIconColorInactive,
             ),
             onPressed: _toggleShowFavorites,
+          ),
+          IconButton(
+            icon: Icon(
+              _isDescending ? Icons.arrow_downward : Icons.arrow_upward,
+              color: appBarIconColor,
+            ),
+            onPressed: _toggleSortOrder,
           ),
         ],
       ),
@@ -91,7 +118,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
         future: _diaryList,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator(color: Color(0xFFFE91A1)));
+            return Center(child: CircularProgressIndicator(color: favoriteIconColorActive));
           } else if (snapshot.hasError) {
             return Center(child: Text('エラーが発生しました: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -99,8 +126,8 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
               child: Text(
                 'まだ日記がありません',
                 style: TextStyle(
-                  fontSize: 18,
-                  color: Color(0xFF888888),
+                  fontSize: appBarFontSize,
+                  color: searchHintColor,
                 ),
               ),
             );

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-// import 'package:intl/date_symbol_data_http_request.dart';
-// import 'package:intl/intl.dart';
+import 'package:mind_journal/model/deviceInfo.dart';
+import 'package:provider/provider.dart';
 import 'package:mind_journal/screen/calendar.dart';
 import 'package:mind_journal/screen/diaryList.dart';
 import 'package:mind_journal/screen/home.dart';
-import 'package:mind_journal/screen/settings.dart';
+import 'package:mind_journal/screen/settings.dart'; // DeviceInfoのインポート
 
 void main() {
-  // 日付フォーマットを初期化
-  // initializeDateFormatting('ja_JP','ja_JP');
-  // Intl.defaultLocale = 'ja_JP';
-  runApp(const NavigationBarApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => DeviceInfo(),
+      child: const NavigationBarApp(),
+    ),
+  );
 }
 
 class NavigationBarApp extends StatelessWidget {
@@ -18,12 +20,32 @@ class NavigationBarApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeMode mode = ThemeMode.system;
-    return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      darkTheme: ThemeData.dark(),
-      themeMode: mode,
-      home: const NavigationExample(),
+    return Consumer<DeviceInfo>(
+      builder: (context, deviceInfo, child) {
+        return MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            textTheme: TextTheme(
+              bodyLarge: TextStyle(
+                fontFamily: deviceInfo.font,
+                fontSize: deviceInfo.fontSize,
+                letterSpacing: deviceInfo.letterSpacing,
+                height: deviceInfo.lineHeight,
+              ),
+              bodyMedium: TextStyle(
+                fontFamily: deviceInfo.font,
+                fontSize: deviceInfo.fontSize,
+                letterSpacing: deviceInfo.letterSpacing,
+                height: deviceInfo.lineHeight,
+              ),
+              // 他のテキストスタイルもここで設定可能
+            ),
+          ),
+          darkTheme: ThemeData.dark(),
+          themeMode: deviceInfo.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          home: const NavigationExample(),
+        );
+      },
     );
   }
 }
@@ -40,7 +62,6 @@ class _NavigationExampleState extends State<NavigationExample> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return Scaffold(
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -84,7 +105,6 @@ class _NavigationExampleState extends State<NavigationExample> {
             ),
           ),
         ),
-
         Card(
           shadowColor: Colors.transparent,
           margin: const EdgeInsets.all(8.0),

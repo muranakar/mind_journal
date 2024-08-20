@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mind_journal/database/diary_database.dart';
+import 'package:mind_journal/model/deviceInfo.dart';
 import 'package:mind_journal/model/diary.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -55,6 +57,8 @@ class _HomeScreen extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceInfo = Provider.of<DeviceInfo>(context);
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -67,7 +71,21 @@ class _HomeScreen extends State<HomeScreen> {
             child: Column(
               children: [
                 TextFormField(
-                  decoration: InputDecoration(labelText: '内容'),
+                  decoration: InputDecoration(
+                    labelText: '内容',
+                    labelStyle: TextStyle(
+                      fontFamily: deviceInfo.font,
+                      fontSize: deviceInfo.fontSize,
+                      letterSpacing: deviceInfo.letterSpacing,
+                      height: deviceInfo.lineHeight,
+                    ),
+                  ),
+                  style: TextStyle(
+                    fontFamily: deviceInfo.font,
+                    fontSize: deviceInfo.fontSize,
+                    letterSpacing: deviceInfo.letterSpacing,
+                    height: deviceInfo.lineHeight,
+                  ),
                   onSaved: (value) {
                     _content = value ?? '';
                   },
@@ -82,7 +100,15 @@ class _HomeScreen extends State<HomeScreen> {
                 SizedBox(height: 16.0),
                 Row(
                   children: [
-                    Text('気持ち:'),
+                    Text(
+                      '気持ち:',
+                      style: TextStyle(
+                        fontFamily: deviceInfo.font,
+                        fontSize: deviceInfo.fontSize,
+                        letterSpacing: deviceInfo.letterSpacing,
+                        height: deviceInfo.lineHeight,
+                      ),
+                    ),
                     SizedBox(width: 16.0),
                     ...moods.map((mood) {
                       return IconButton(
@@ -106,7 +132,21 @@ class _HomeScreen extends State<HomeScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _tagController,
-                        decoration: InputDecoration(labelText: 'タグを入力'),
+                        decoration: InputDecoration(
+                          labelText: 'タグを入力',
+                          labelStyle: TextStyle(
+                            fontFamily: deviceInfo.font,
+                            fontSize: deviceInfo.fontSize,
+                            letterSpacing: deviceInfo.letterSpacing,
+                            height: deviceInfo.lineHeight,
+                          ),
+                        ),
+                        style: TextStyle(
+                          fontFamily: deviceInfo.font,
+                          fontSize: deviceInfo.fontSize,
+                          letterSpacing: deviceInfo.letterSpacing,
+                          height: deviceInfo.lineHeight,
+                        ),
                         onFieldSubmitted: (value) => _addTag(value),
                       ),
                     ),
@@ -134,10 +174,18 @@ class _HomeScreen extends State<HomeScreen> {
                 ),
                 SizedBox(height: 16.0),
                 if (_recommendedTags.isNotEmpty) ...[
-                  Text('おすすめタグ:'),
+                  Text(
+                    'おすすめタグ:',
+                    style: TextStyle(
+                      fontFamily: deviceInfo.font,
+                      fontSize: deviceInfo.fontSize,
+                      letterSpacing: deviceInfo.letterSpacing,
+                      height: deviceInfo.lineHeight,
+                    ),
+                  ),
                   SizedBox(height: 8.0),
                   Container(
-                    height: 40.0, // タグリストの高さを設定
+                    height: 40.0,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: _recommendedTags.map((tag) {
@@ -186,7 +234,15 @@ class _HomeScreen extends State<HomeScreen> {
                       });
                     }
                   },
-                  child: Text('保存'),
+                  child: Text(
+                    '保存',
+                    style: TextStyle(
+                      fontFamily: deviceInfo.font,
+                      fontSize: deviceInfo.fontSize,
+                      letterSpacing: deviceInfo.letterSpacing,
+                      height: deviceInfo.lineHeight,
+                    ),
+                  ),
                 ),
               ],
             ),
