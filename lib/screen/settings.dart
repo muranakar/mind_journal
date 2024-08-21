@@ -39,12 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: Text('現在のフォント: ${deviceInfo.font}'),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => FontSelectionScreen(
-                  selectedFont: deviceInfo.font,
-                  onFontSelected: (font) {
-                    deviceInfo.setFont(font);
-                  },
-                ),
+                builder: (context) => FontSelectionScreen(                ),
               ),
             ),
           ),

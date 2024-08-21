@@ -30,7 +30,60 @@ flutter:
     - assets/fonts/
 
   fonts:
-    - family: 'Buildingsandundertherailwaytracks-Regular'
+    - family: 'Buildingsandundertherailwaytracks'
       fonts:
         - asset: assets/fonts/Buildingsandundertherailwaytracks-Regular.otf
-    
+    - family: 'HannariMincho'
+      fonts:
+        - asset: assets/fonts/HannariMincho-Regular.otf
+    - family: 'Yomogi'
+      fonts:
+        - asset: assets/fonts/Yomogi-Regular.ttf
+    - family: 'KiwiMaru'
+      fonts:
+        - asset: assets/fonts/KiwiMaru-Regular.ttf
+    - family: 'HannariMincho'
+      fonts:
+        - asset: assets/fonts/HannariMincho-Regular.otf
+    - family: 'RocknRollOne'
+      fonts:
+        - asset: assets/fonts/RocknRollOne-Regular.ttf
+    - family: 'DarumadropOne'
+      fonts:
+        - asset: assets/fonts/DarumadropOne-Regular.ttf         
+    - family: 'TsukimiRounded'
+      fonts:
+        - asset: assets/fonts/TsukimiRounded-Regular.ttf
+    - family: 'KaiseiTokumin'
+      fonts:
+        - asset: assets/fonts/KaiseiTokumin-Regular.ttf
+    - family: 'HachiMaruPop'
+      fonts:
+        - asset: assets/fonts/HachiMaruPop-Regular.ttf
+    - family: 'Stick'
+      fonts:
+        - asset: assets/fonts/Stick-Regular.ttf
+    - family: 'MonomaniacOne'
+      fonts:
+        - asset: assets/fonts/MonomaniacOne-Regular.ttf
+    - family: 'YuseiMagic'
+      fonts:
+        - asset: assets/fonts/YuseiMagic-Regular.ttf
+    - family: 'SlacksideOne'
+      fonts:
+        - asset: assets/fonts/SlacksideOne-Regular.ttf
+    - family: 'ShipporiMincho'
+      fonts:
+        - asset: assets/fonts/ShipporiMincho-Regular.ttf
+    - family: 'KosugiMaru'
+      fonts:
+        - asset: assets/fonts/KosugiMaru-Regular.ttf
+    - family: 'ZenKurenaido'
+      fonts:
+        - asset: assets/fonts/ZenKurenaido-Regular.ttf
+    - family: 'KleeOne'
+      fonts:
+        - asset: assets/fonts/KleeOne-Regular.ttf
+    - family: 'YujiSyuku'
+      fonts:
+        - asset: assets/fonts/YujiSyuku-Regular.ttf
