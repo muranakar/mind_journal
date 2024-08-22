@@ -5,6 +5,10 @@ import 'package:mind_journal/model/diary.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
+  final Function(int) onTabSelected; // タブのインデックスを変更するためのコールバック関数
+
+  HomeScreen({required this.onTabSelected}); // コンストラクタでコールバック関数を受け取る
+
   @override
   _HomeScreen createState() => _HomeScreen();
 }
@@ -232,6 +236,9 @@ class _HomeScreen extends State<HomeScreen> {
                         _formKey.currentState!.reset();
                         _tagController.clear();
                       });
+
+                      // カレンダータブに遷移
+                      widget.onTabSelected(1); // Calendarタブのインデックスが1だと仮定
                     }
                   },
                   child: Text(

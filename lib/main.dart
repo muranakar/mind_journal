@@ -60,6 +60,12 @@ class NavigationExample extends StatefulWidget {
 class _NavigationExampleState extends State<NavigationExample> {
   int currentPageIndex = 0;
 
+  void _onTabSelected(int index) {
+    setState(() {
+      currentPageIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,7 +107,7 @@ class _NavigationExampleState extends State<NavigationExample> {
           margin: const EdgeInsets.all(8.0),
           child: SizedBox.expand(
             child: Center(
-              child: HomeScreen(),
+              child: HomeScreen(onTabSelected: _onTabSelected),
             ),
           ),
         ),
