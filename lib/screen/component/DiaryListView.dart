@@ -9,6 +9,14 @@ class DiaryListView extends StatelessWidget {
   final Function(int) onDeleteDiary;
   final bool displayTimeLeft;
 
+  // 定数化されたレイアウトに関する数値
+  static const double verticalPadding = 2.0;
+  static const double horizontalPadding = 6.0;
+  static const double bubblePadding = 8.0;
+  static const double chipSpacing = 3.0;
+  static const double borderRadius = 12.0;
+  static const double iconPadding = 2.0;
+
   DiaryListView({
     required this.diaries,
     required this.onToggleFavorite,
@@ -20,9 +28,22 @@ class DiaryListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<DeviceInfo>(
       builder: (context, deviceInfo, child) {
+        final isDarkMode = deviceInfo.isDarkMode;
+
+        // テーマに応じた色の定義
+        final Color backgroundColor = isDarkMode ? Color(0xFF1E1E1E) : Colors.white;
+        final Color textColor = isDarkMode ? Colors.white : Color(0xFF333333);
+        final Color timeColor = isDarkMode ? Colors.grey : Color(0xFF555555);
+        final Color dateColor = isDarkMode ? Colors.grey : Color(0xFF999999);
+        final Color chipTextColor = isDarkMode ? Color(0xFFFE91A1) : Color(0xFFFE91A1);
+        final Color chipBackgroundColor = isDarkMode ? Color(0xFF3E3E3E) : Color(0xFFFEF3F3);
+        final Color favoriteColor = isDarkMode ? Color(0xFFFF6B6B) : Color(0xFFFE91A1);
+        final Color favoriteBorderColor = isDarkMode ? Colors.grey : Color(0xFF999999);
+        final Color deleteBackgroundColor = isDarkMode ? Color(0xFFFF4444) : Colors.redAccent;
+
         return ListView.builder(
           padding: EdgeInsets.symmetric(
-              vertical: deviceInfo.lineHeight * 2, horizontal: 6.0),
+              vertical: deviceInfo.lineHeight * verticalPadding, horizontal: horizontalPadding),
           itemCount: diaries.length,
           itemBuilder: (context, index) {
             final diary = diaries[index];
@@ -39,23 +60,23 @@ class DiaryListView extends StatelessWidget {
               },
               background: Container(
                 alignment: Alignment.centerRight,
-                padding: EdgeInsets.only(right: 6.0),
-                color: Colors.redAccent,
+                padding: EdgeInsets.only(right: horizontalPadding),
+                color: deleteBackgroundColor,
                 child: Icon(Icons.delete,
                     color: Colors.white, size: deviceInfo.fontSize * 1.5),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2.0),
+                padding: const EdgeInsets.symmetric(vertical: verticalPadding),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     if (displayTimeLeft)
                       // 左側に時間を表示
                       Container(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(bubblePadding),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12.0),
+                          color: backgroundColor,
+                          borderRadius: BorderRadius.circular(borderRadius),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black12,
@@ -67,20 +88,20 @@ class DiaryListView extends StatelessWidget {
                         child: Text(
                           timeString,
                           style: TextStyle(
-                            color: Color(0xFF555555),
-                            fontSize: deviceInfo.fontSize * 0.7,
+                            color: timeColor,
+                            fontSize: deviceInfo.fontSize * 0.5,
                             fontFamily: deviceInfo.font,
                           ),
                         ),
                       ),
-                    if (displayTimeLeft) SizedBox(width: 3.0),
+                    if (displayTimeLeft) SizedBox(width: horizontalPadding / 2),
                     // メッセージバブル
                     Expanded(
                       child: Container(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(bubblePadding),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12.0),
+                          color: backgroundColor,
+                          borderRadius: BorderRadius.circular(borderRadius),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black12,
@@ -95,7 +116,7 @@ class DiaryListView extends StatelessWidget {
                             Text(
                               diary.content,
                               style: TextStyle(
-                                color: Color(0xFF333333),
+                                color: textColor,
                                 fontSize: deviceInfo.fontSize * 0.85,
                                 fontFamily: deviceInfo.font,
                                 height: deviceInfo.lineHeight,
@@ -105,16 +126,16 @@ class DiaryListView extends StatelessWidget {
                             if (diary.tags.isNotEmpty)
                               Padding(
                                 padding:
-                                    const EdgeInsets.only(top: 1.0),
+                                    const EdgeInsets.only(top: verticalPadding),
                                 child: Wrap(
-                                  spacing: 3.0,
-                                  runSpacing: 1.0,
+                                  spacing: chipSpacing,
+                                  runSpacing: verticalPadding,
                                   children: diary.tags.map((tag) {
                                     return Chip(
                                       label: Text(tag),
-                                      backgroundColor: Color(0xFFFEF3F3),
+                                      backgroundColor: chipBackgroundColor,
                                       labelStyle: TextStyle(
-                                        color: Color(0xFFFE91A1),
+                                        color: chipTextColor,
                                         fontSize: deviceInfo.fontSize * 0.7,
                                         fontFamily: deviceInfo.font,
                                       ),
@@ -130,8 +151,8 @@ class DiaryListView extends StatelessWidget {
                                   Text(
                                     dateString,
                                     style: TextStyle(
-                                      color: Color(0xFF999999),
-                                      fontSize: deviceInfo.fontSize * 0.7,
+                                      color: dateColor,
+                                      fontSize: deviceInfo.fontSize * 0.6,
                                       fontFamily: deviceInfo.font,
                                     ),
                                   ),
@@ -143,12 +164,12 @@ class DiaryListView extends StatelessWidget {
                                           ? Icons.favorite
                                           : Icons.favorite_border,
                                       color: diary.isFavorite
-                                          ? Color(0xFFFE91A1)
-                                          : Color(0xFF999999),
+                                          ? favoriteColor
+                                          : favoriteBorderColor,
                                       size: deviceInfo.fontSize * 0.85,
                                     ),
                                     onPressed: () => onToggleFavorite(diary),
-                                    padding: EdgeInsets.all(2.0),
+                                    padding: EdgeInsets.all(iconPadding),
                                     constraints: BoxConstraints(),
                                   ),
                               ],
