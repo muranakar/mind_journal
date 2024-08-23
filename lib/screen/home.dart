@@ -76,7 +76,7 @@ class _HomeScreen extends State<HomeScreen> {
               children: [
                 TextFormField(
                   decoration: InputDecoration(
-                    labelText: '内容',
+                    labelText: '今の気持ちを記録しよう',
                     labelStyle: TextStyle(
                       fontFamily: deviceInfo.font,
                       fontSize: deviceInfo.fontSize,
@@ -95,7 +95,7 @@ class _HomeScreen extends State<HomeScreen> {
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '内容を入力してください';
+                      return '記録してほしいなぁ👀';
                     }
                     return null;
                   },
@@ -105,7 +105,7 @@ class _HomeScreen extends State<HomeScreen> {
                 Row(
                   children: [
                     Text(
-                      '気持ち:',
+                      '',
                       style: TextStyle(
                         fontFamily: deviceInfo.font,
                         fontSize: deviceInfo.fontSize,
@@ -137,7 +137,7 @@ class _HomeScreen extends State<HomeScreen> {
                       child: TextFormField(
                         controller: _tagController,
                         decoration: InputDecoration(
-                          labelText: 'タグを入力',
+                          labelText: 'タグを追加',
                           labelStyle: TextStyle(
                             fontFamily: deviceInfo.font,
                             fontSize: deviceInfo.fontSize,
@@ -169,7 +169,15 @@ class _HomeScreen extends State<HomeScreen> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
                         child: Chip(
-                          label: Text(tag),
+                          label: Text(
+                            tag,
+                            style: TextStyle(
+                              fontFamily: deviceInfo.font,
+                              fontSize: deviceInfo.fontSize,
+                              letterSpacing: deviceInfo.letterSpacing,
+                              height: deviceInfo.lineHeight,
+                            ),
+                          ),
                           onDeleted: () => _removeTag(tag),
                         ),
                       );
@@ -189,24 +197,33 @@ class _HomeScreen extends State<HomeScreen> {
                   ),
                   SizedBox(height: 8.0),
                   Container(
-                    height: 40.0,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: _recommendedTags.map((tag) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: GestureDetector(
+                    height: 120.0, // スクロール可能なコンテナの高さを設定
+                    child: SingleChildScrollView(
+                      child: Wrap(
+                        spacing: 8.0, // タグ同士の水平間隔
+                        runSpacing: 4.0, // 行間の垂直間隔
+                        children: _recommendedTags.map((tag) {
+                          return GestureDetector(
                             onTap: () => _addTag(tag),
                             child: Chip(
-                              label: Text(tag),
+                              label: Text(
+                                tag,
+                                style: TextStyle(
+                                  fontFamily: deviceInfo.font,
+                                  fontSize: deviceInfo.fontSize,
+                                  letterSpacing: deviceInfo.letterSpacing,
+                                  height: deviceInfo.lineHeight,
+                                ),
+                              ),
                             ),
-                          ),
-                        );
-                      }).toList(),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                   SizedBox(height: 8.0),
                 ],
+                SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
@@ -242,7 +259,7 @@ class _HomeScreen extends State<HomeScreen> {
                     }
                   },
                   child: Text(
-                    '保存',
+                    '投稿する',
                     style: TextStyle(
                       fontFamily: deviceInfo.font,
                       fontSize: deviceInfo.fontSize,
