@@ -70,9 +70,8 @@ class _DiaryListWithCalendarScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(.0), 
-        child: AppBar(
-        ),
+        preferredSize: Size.fromHeight(.0),
+        child: AppBar(),
       ),
       body: Column(
         children: [
