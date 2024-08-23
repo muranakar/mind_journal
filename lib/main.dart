@@ -23,24 +23,6 @@ class NavigationBarApp extends StatelessWidget {
     return Consumer<DeviceInfo>(
       builder: (context, deviceInfo, child) {
         return MaterialApp(
-          theme: ThemeData(
-            useMaterial3: true,
-            textTheme: TextTheme(
-              bodyLarge: TextStyle(
-                fontFamily: deviceInfo.font,
-                fontSize: deviceInfo.fontSize,
-                letterSpacing: deviceInfo.letterSpacing,
-                height: deviceInfo.lineHeight,
-              ),
-              bodyMedium: TextStyle(
-                fontFamily: deviceInfo.font,
-                fontSize: deviceInfo.fontSize,
-                letterSpacing: deviceInfo.letterSpacing,
-                height: deviceInfo.lineHeight,
-              ),
-              // 他のテキストスタイルもここで設定可能
-            ),
-          ),
           darkTheme: ThemeData.dark(),
           themeMode: deviceInfo.isDarkMode ? ThemeMode.dark : ThemeMode.light,
           home: const NavigationExample(),
@@ -139,6 +121,42 @@ class _NavigationExampleState extends State<NavigationExample> {
           ),
         ),
       ][currentPageIndex],
+      floatingActionButton: (currentPageIndex == 1 ||
+              currentPageIndex == 2 ||
+              currentPageIndex == 3)
+          ? FloatingActionButton(
+              onPressed: () {
+                // ここに日記を追加する画面への遷移などの処理を実装
+                setState(() {
+                  currentPageIndex = 0;
+                });
+              },
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.green[300], // 背景色を指定
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2), // 影の色を指定
+                      spreadRadius: 1, // 影の広がりを指定
+                      blurRadius: 10, // 影のぼかし具合を指定
+                      offset: Offset(0, 5), // 影の位置を指定 (x, y)
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.mode,
+                  color: Colors.white, // アイコンの色を白に指定
+                  size: 24.0, // アイコンのサイズを調整
+                ),
+              ),
+              backgroundColor: Colors.transparent, // ボタンの背景を透明にする
+              elevation: 0.0, // デフォルトの影を削除
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
