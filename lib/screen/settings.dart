@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mind_journal/model/deviceInfo.dart';
-import 'package:mind_journal/screen/settingFont.dart';
+import 'package:mind_journal/screen/settingScreen/settingFont.dart';
 import 'package:provider/provider.dart';
 
 

@@ -38,7 +38,7 @@ class _HomeScreen extends State<HomeScreen> {
   }
 
   void _loadRecommendedTags() async {
-    final tags = await DiaryDatabase.instance.getAllTags();
+    final tags = await DiaryDatabase.instance.fetchAllTagsSortedByUsage();
     setState(() {
       _recommendedTags = tags;
     });

@@ -9,7 +9,7 @@ class DeviceInfo with ChangeNotifier {
   double _lineHeight = 0.0;
   bool _isDarkMode = false;
 
-  String get font => _font.isEmpty ? 'Roboto' : _font;
+  String get font => _font.isEmpty ? 'ShipporiMincho' : _font;
   double get fontSize => _fontSize == 0.0 ? 14.0 : _fontSize;
   double get letterSpacing => _letterSpacing;
   double get lineHeight => _lineHeight == 0.0 ? 1.5 : _lineHeight;
