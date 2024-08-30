@@ -16,6 +16,14 @@ class DiaryDatabase {
     return _database!;
   }
 
+  Future<Database> get testDatabase async {
+    if (_database != null) return _database!;
+
+    // 一時的なテストデータベースを作成
+    _database = await _initDB('test_diaries.db');
+    return _database!;
+  }
+
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
@@ -94,7 +102,7 @@ class DiaryDatabase {
     await db.delete('diaries', where: 'id = ?', whereArgs: [id]);
   }
 
-Future<List<String>> getAllTags() async {
+Future<List<String>> fetchAllTagsSortedByUsage() async {
   final db = await instance.database;
 
   final result = await db.rawQuery('''
