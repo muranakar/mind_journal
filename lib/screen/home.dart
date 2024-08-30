@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mind_journal/database/diary_database.dart';
-import 'package:mind_journal/model/deviceInfo.dart';
+import 'package:mind_journal/provider/deviceInfo.dart';
 import 'package:mind_journal/model/diary.dart';
 import 'package:provider/provider.dart';
 

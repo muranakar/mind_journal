@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mind_journal/model/deviceInfo.dart';
+import 'package:mind_journal/provider/deviceInfo.dart';
 import 'package:provider/provider.dart';
 import 'package:mind_journal/model/diary.dart';
 
@@ -77,7 +77,7 @@ class DiaryListView extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: backgroundColor,
                           borderRadius: BorderRadius.circular(borderRadius),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
                               color: Colors.black12,
                               offset: Offset(0, 2),

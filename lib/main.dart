@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mind_journal/model/deviceInfo.dart';
+import 'package:mind_journal/provider/deviceInfo.dart';
 import 'package:provider/provider.dart';
 import 'package:mind_journal/screen/calendar.dart';
 import 'package:mind_journal/screen/diaryList.dart';
