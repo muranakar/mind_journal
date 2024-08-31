@@ -91,7 +91,7 @@ class _FontSelectionScreenState extends State<FontSelectionScreen> {
                     });
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
                     if (_selectedFont != null) {
@@ -102,7 +102,7 @@ class _FontSelectionScreenState extends State<FontSelectionScreen> {
                       Navigator.of(context).pop();
                     }
                   },
-                  child: Text('決定'),
+                  child: const Text('決定'),
                 ),
               ],
             ),

@@ -24,7 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text('設定', style: TextStyle(fontFamily: deviceInfo.font)),
       ),
       body: ListView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         children: [
           SwitchListTile(
             title:

@@ -60,7 +60,7 @@ class DiaryListView extends StatelessWidget {
               },
               background: Container(
                 alignment: Alignment.centerRight,
-                padding: EdgeInsets.only(right: horizontalPadding),
+                padding: const EdgeInsets.only(right: horizontalPadding),
                 color: deleteBackgroundColor,
                 child: Icon(Icons.delete,
                     color: Colors.white, size: deviceInfo.fontSize * 1.5),
@@ -102,7 +102,7 @@ class DiaryListView extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: backgroundColor,
                           borderRadius: BorderRadius.circular(borderRadius),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
                               color: Colors.black12,
                               offset: Offset(0, 2),

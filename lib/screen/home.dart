@@ -130,7 +130,7 @@ class _HomeScreen extends State<HomeScreen> {
                     }).toList(),
                   ],
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Row(
                   children: [
                     Expanded(
@@ -160,7 +160,7 @@ class _HomeScreen extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 Container(
                   height: 40.0,
                   child: ListView(
@@ -184,7 +184,7 @@ class _HomeScreen extends State<HomeScreen> {
                     }).toList(),
                   ),
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 if (_recommendedTags.isNotEmpty) ...[
                   Text(
                     'おすすめタグ:',
@@ -195,7 +195,7 @@ class _HomeScreen extends State<HomeScreen> {
                       height: deviceInfo.lineHeight,
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   Container(
                     height: 120.0, // スクロール可能なコンテナの高さを設定
                     child: SingleChildScrollView(
@@ -221,9 +221,9 @@ class _HomeScreen extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                 ],
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
@@ -241,7 +241,7 @@ class _HomeScreen extends State<HomeScreen> {
                       await DiaryDatabase.instance.createDiary(newDiary);
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('今の気持ちを記録しました📝')),
+                        const SnackBar(content: Text('今の気持ちを記録しました📝')),
                       );
 
                       // フォームのリセット処理

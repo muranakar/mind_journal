@@ -122,13 +122,13 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
         future: _diaryList,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
                 child:
                     CircularProgressIndicator(color: favoriteIconColorActive));
           } else if (snapshot.hasError) {
             return Center(child: Text('エラーが発生しました: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
+            return const Center(
               child: Text(
                 'まだ日記がありません',
                 style: TextStyle(
