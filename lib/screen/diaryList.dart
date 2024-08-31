@@ -64,14 +64,16 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
   List<Diary> _filterDiaries(List<Diary> diaries) {
     List<Diary> filteredDiaries = diaries;
     if (_showFavoritesOnly) {
-      filteredDiaries = filteredDiaries.where((diary) => diary.isFavorite).toList();
+      filteredDiaries =
+          filteredDiaries.where((diary) => diary.isFavorite).toList();
     }
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
       filteredDiaries = filteredDiaries.where((diary) {
         final titleMatch = diary.title.toLowerCase().contains(query);
         final contentMatch = diary.content.toLowerCase().contains(query);
-        final tagsMatch = diary.tags.any((tag) => tag.toLowerCase().contains(query));
+        final tagsMatch =
+            diary.tags.any((tag) => tag.toLowerCase().contains(query));
         return titleMatch || contentMatch || tagsMatch;
       }).toList();
     }
@@ -101,7 +103,9 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
           IconButton(
             icon: Icon(
               _showFavoritesOnly ? Icons.favorite : Icons.favorite_border,
-              color: _showFavoritesOnly ? favoriteIconColorActive : favoriteIconColorInactive,
+              color: _showFavoritesOnly
+                  ? favoriteIconColorActive
+                  : favoriteIconColorInactive,
             ),
             onPressed: _toggleShowFavorites,
           ),
@@ -118,7 +122,9 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
         future: _diaryList,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator(color: favoriteIconColorActive));
+            return Center(
+                child:
+                    CircularProgressIndicator(color: favoriteIconColorActive));
           } else if (snapshot.hasError) {
             return Center(child: Text('エラーが発生しました: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {

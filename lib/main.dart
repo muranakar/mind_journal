@@ -131,6 +131,8 @@ class _NavigationExampleState extends State<NavigationExample> {
                   currentPageIndex = 0;
                 });
               },
+              backgroundColor: Colors.transparent, // ボタンの背景を透明にする
+              elevation: 0.0,
               child: Container(
                 width: double.infinity,
                 height: double.infinity,
@@ -142,18 +144,16 @@ class _NavigationExampleState extends State<NavigationExample> {
                       color: Colors.black.withOpacity(0.2), // 影の色を指定
                       spreadRadius: 1, // 影の広がりを指定
                       blurRadius: 10, // 影のぼかし具合を指定
-                      offset: Offset(0, 5), // 影の位置を指定 (x, y)
+                      offset: const Offset(0, 5), // 影の位置を指定 (x, y)
                     ),
                   ],
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.mode,
                   color: Colors.white, // アイコンの色を白に指定
                   size: 24.0, // アイコンのサイズを調整
                 ),
-              ),
-              backgroundColor: Colors.transparent, // ボタンの背景を透明にする
-              elevation: 0.0, // デフォルトの影を削除
+              ), // デフォルトの影を削除
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

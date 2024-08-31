@@ -130,7 +130,6 @@ class _ReflectionScreenState extends State<ReflectionScreen>
   }
 }
 
-
 class FloatingTextScreen extends StatefulWidget {
   @override
   _FloatingTextScreenState createState() => _FloatingTextScreenState();

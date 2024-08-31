@@ -37,10 +37,10 @@ class Diary {
       title: map['title'],
       content: map['content'],
       isFavorite: map['is_favorite'] == 1,
-      tags: [],  
+      tags: [],
       createdAt: DateTime.parse(map['created_at']).toLocal(), // 文字列をDateTimeに変換
       updatedAt: DateTime.parse(map['updated_at']).toLocal(),
-      emotionImage: map['emotion_image'], 
+      emotionImage: map['emotion_image'],
     );
   }
 }

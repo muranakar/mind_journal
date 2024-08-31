@@ -102,10 +102,10 @@ class DiaryDatabase {
     await db.delete('diaries', where: 'id = ?', whereArgs: [id]);
   }
 
-Future<List<String>> fetchAllTagsSortedByUsage() async {
-  final db = await instance.database;
+  Future<List<String>> fetchAllTagsSortedByUsage() async {
+    final db = await instance.database;
 
-  final result = await db.rawQuery('''
+    final result = await db.rawQuery('''
     SELECT tags.name, COUNT(diary_tags.tag_id) as tag_count
     FROM tags
     LEFT JOIN diary_tags ON tags.id = diary_tags.tag_id
@@ -113,10 +113,8 @@ Future<List<String>> fetchAllTagsSortedByUsage() async {
     ORDER BY tag_count DESC
   ''');
 
-  return result.map((map) => map['name'] as String).toList();
-}
-
-
+    return result.map((map) => map['name'] as String).toList();
+  }
 
   Future close() async {
     final db = await instance.database;
