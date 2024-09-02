@@ -42,7 +42,7 @@ Flutter学習を目的に作成しました。
 
 ### 開発環境
 - flutter_test: Flutterアプリケーションのテストを行うためのライブラリ。
-- - flutter_lints: Flutterプロジェクト向けのコードリント（静的解析）ルールセット。
+- flutter_lints: Flutterプロジェクト向けのコードリント（静的解析）ルールセット。
 - sqflite_common_ffi: sqfliteの共通インターフェースを提供し、ffiを使用してネイティブコードを呼び出すためのライブラリ。
 
 # 学んだこと
@@ -52,21 +52,17 @@ Flutter学習を目的に作成しました。
 - ディレクトリー構成
 - ListView,Row,Column　などの基本的なWidgetの役割
 
-
 ### Providerを用いた実装（lib/model/deviceInfo.dart）
 - フォント、ダークモードなどの状態管理のため
-
 
 ### SQLiteを用いた実装（lib/database/diary_database.dart）
 - DBとDartの型に合わせたデータ変換
 - sqfliteライブラリーの使用法
 
-
 ### テスト実装（test/diary_database_test.dart　）
 - sqfliteを用いてテスト実装
 - 簡単なCRUD処理が行えているかのチェック
 - 日記の入力画面において、タグの表示順を使用頻度順に並べているので、その部分のユニットテスト
-
 
 # 次回以降の課題
 
