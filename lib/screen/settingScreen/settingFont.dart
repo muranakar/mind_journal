@@ -22,24 +22,24 @@ class _FontSelectionScreenState extends State<FontSelectionScreen> {
   static const String displayText = 'サンプルテキスト';
 
   final List<String> fonts = [
-    'Buildingsandundertherailwaytracks',
     'HannariMincho',
-    'Yomogi',
     'KiwiMaru',
+    'TsukimiRounded',
+    'ShipporiMincho',
+    'ZenKurenaido', 
+    'KleeOne',
+    'Yomogi',
+    'KaiseiTokumin',
+    'KosugiMaru',
+    'YujiSyuku',
+    'Buildingsandundertherailwaytracks',
     'RocknRollOne',
     'DarumadropOne',
-    'TsukimiRounded',
-    'KaiseiTokumin',
     'HachiMaruPop',
     'Stick',
     'MonomaniacOne',
     'YuseiMagic',
     'SlacksideOne',
-    'ShipporiMincho',
-    'KosugiMaru',
-    'ZenKurenaido',
-    'KleeOne',
-    'YujiSyuku',
   ];
 
   @override
@@ -57,7 +57,7 @@ class _FontSelectionScreenState extends State<FontSelectionScreen> {
                 final font = fonts[index];
                 return RadioListTile<String>(
                   title: Text(
-                    displayText,
+                    '${index + 1}}' + 'あいうえおアイウエオ朝昼夜',
                     style: TextStyle(
                       fontFamily: font,
                       fontSize: _selectedFontSize,
