@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DeviceInfo with ChangeNotifier {
@@ -9,7 +8,7 @@ class DeviceInfo with ChangeNotifier {
   double _lineHeight = 0.0;
   bool _isDarkMode = false;
 
-  String get font => _font.isEmpty ? 'ShipporiMincho' : _font;
+  String get font => _font.isEmpty ? 'HannariMincho' : _font;
   double get fontSize => _fontSize == 0.0 ? 14.0 : _fontSize;
   double get letterSpacing => _letterSpacing;
   double get lineHeight => _lineHeight == 0.0 ? 1.5 : _lineHeight;

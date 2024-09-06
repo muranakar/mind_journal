@@ -16,23 +16,20 @@ class DiaryDatabase {
     return _database!;
   }
 
-  Future<Database> get testDatabase async {
-    if (_database != null) return _database!;
-
-    // 一時的なテストデータベースを作成
-    _database = await _initDB('test_diaries.db');
-    return _database!;
-  }
-
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(
+    final database = await openDatabase(
       path,
       version: 1,
-      onCreate: _createDB,
+      onCreate: (db, version) async {
+        await _createDB(db, version);
+        await _insertInitialTags(db);  // 初回起動時にタグを挿入
+      },
     );
+
+    return database;
   }
 
   Future _createDB(Database db, int version) async {
@@ -63,6 +60,23 @@ class DiaryDatabase {
       FOREIGN KEY(tag_id) REFERENCES tags(id)
     )
     ''');
+  }
+
+  Future _insertInitialTags(Database db) async {
+    const List<String> initialTags = [
+      '不安', '喜び', '怒り', '悲しみ', 'イライラ', '安心', '安堵', 
+      '満足', '孤独感', '恐怖', '焦り', '悔しさ', '罪悪感', '感謝', 
+      '恥', '無力感', '嫉妬', '驚き', '困惑', '希望'
+    ];
+
+    // タグが既に挿入されているか確認
+    final count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM tags'));
+    if (count == 0) {
+      // 初回起動時のみタグを挿入
+      for (String tag in initialTags) {
+        await db.insert('tags', {'name': tag});
+      }
+    }
   }
 
   Future<void> createDiary(Diary diary) async {

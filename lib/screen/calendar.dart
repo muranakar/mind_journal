@@ -4,7 +4,20 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:mind_journal/database/diary_database.dart';
 import 'package:mind_journal/model/diary.dart';
 
+// 定数の定義
+const Color primaryColor = Color(0xFFFE91A1);
+const Color errorColor = Color(0xFF888888);
+const Color markerColor = Colors.red;
+const Color markerTextColor = Colors.white;
+const String noDiaryMessage = 'まだ日記がありません';
+const double appBarHeight = 0.0;
+const double fontSizeForNoDiaryMessage = 18.0;
+const double markerFontSize = 12.0;
+const double markerPadding = 4.0;
+
 class DiaryListWithCalendarScreen extends StatefulWidget {
+  const DiaryListWithCalendarScreen({super.key});
+
   @override
   _DiaryListWithCalendarScreenState createState() =>
       _DiaryListWithCalendarScreenState();
@@ -70,7 +83,7 @@ class _DiaryListWithCalendarScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(.0),
+        preferredSize: const Size.fromHeight(appBarHeight),
         child: AppBar(),
       ),
       body: Column(
@@ -118,18 +131,19 @@ class _DiaryListWithCalendarScreenState
               future: _diaryList,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                      child: const CircularProgressIndicator(
-                          color: Color(0xFFFE91A1)));
+                  return const Center(
+                      child: CircularProgressIndicator(
+                          color: primaryColor));
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('エラーが発生しました: ${snapshot.error}'));
+                  return Center(
+                      child: Text('エラーが発生しました: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
                     child: Text(
-                      'まだ日記がありません',
+                      noDiaryMessage,
                       style: TextStyle(
-                        fontSize: 18,
-                        color: Color(0xFF888888),
+                        fontSize: fontSizeForNoDiaryMessage,
+                        color: errorColor,
                       ),
                     ),
                   );
@@ -153,16 +167,16 @@ class _DiaryListWithCalendarScreenState
 
   Widget _buildBadge() {
     return Container(
-      padding: EdgeInsets.all(4),
+      padding: const EdgeInsets.all(markerPadding),
       decoration: const BoxDecoration(
-        color: Colors.red,
+        color: markerColor,
         shape: BoxShape.circle,
       ),
       child: const Text(
         '•',
         style: TextStyle(
-          color: Colors.white,
-          fontSize: 12,
+          color: markerTextColor,
+          fontSize: markerFontSize,
         ),
       ),
     );

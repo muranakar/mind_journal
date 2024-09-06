@@ -17,7 +17,7 @@ void main() {
 
     // テスト用のデータベースを初期化
     database = DiaryDatabase.instance;
-    await database!.testDatabase; // データベースを初期化
+    await database.testDatabase; // データベースを初期化
   });
 
   tearDown(() async {

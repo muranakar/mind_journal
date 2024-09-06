@@ -3,6 +3,8 @@ import 'package:mind_journal/provider/deviceInfo.dart';
 import 'package:provider/provider.dart';
 
 class FontSelectionScreen extends StatefulWidget {
+  const FontSelectionScreen({super.key});
+
   @override
   _FontSelectionScreenState createState() => _FontSelectionScreenState();
 }
@@ -57,7 +59,7 @@ class _FontSelectionScreenState extends State<FontSelectionScreen> {
                 final font = fonts[index];
                 return RadioListTile<String>(
                   title: Text(
-                    '${index + 1}}' + 'あいうえおアイウエオ朝昼夜',
+                    'あいうえおアイウエオ朝昼夜',
                     style: TextStyle(
                       fontFamily: font,
                       fontSize: _selectedFontSize,
@@ -68,6 +70,11 @@ class _FontSelectionScreenState extends State<FontSelectionScreen> {
                   onChanged: (value) {
                     setState(() {
                       _selectedFont = value;
+                      if (_selectedFont != null) {
+                      final deviceInfo =
+                          Provider.of<DeviceInfo>(context, listen: false);
+                      deviceInfo.setFont(_selectedFont!);
+                    }
                     });
                   },
                 );
@@ -82,28 +89,21 @@ class _FontSelectionScreenState extends State<FontSelectionScreen> {
                 Slider(
                   value: _selectedFontSize,
                   min: 10.0,
-                  max: 30.0,
-                  divisions: 20,
+                  max: 20.0,
+                  divisions: 10,
                   label: _selectedFontSize.toStringAsFixed(1),
                   onChanged: (value) {
                     setState(() {
                       _selectedFontSize = value;
+                      if (_selectedFont != null) {
+                      final deviceInfo =
+                          Provider.of<DeviceInfo>(context, listen: false);
+                      deviceInfo.setFontSize(_selectedFontSize);
+                    }
                     });
                   },
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_selectedFont != null) {
-                      final deviceInfo =
-                          Provider.of<DeviceInfo>(context, listen: false);
-                      await deviceInfo.setFont(_selectedFont!);
-                      await deviceInfo.setFontSize(_selectedFontSize);
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  child: const Text('決定'),
-                ),
               ],
             ),
           ),

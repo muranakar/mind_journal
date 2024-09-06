@@ -17,7 +17,7 @@ class DiaryListView extends StatelessWidget {
   static const double borderRadius = 12.0;
   static const double iconPadding = 2.0;
 
-  DiaryListView({
+  const DiaryListView({super.key, 
     required this.diaries,
     required this.onToggleFavorite,
     required this.onDeleteDiary,
@@ -31,15 +31,15 @@ class DiaryListView extends StatelessWidget {
         final isDarkMode = deviceInfo.isDarkMode;
 
         // テーマに応じた色の定義
-        final Color backgroundColor = isDarkMode ? Color(0xFF1E1E1E) : Colors.white;
-        final Color textColor = isDarkMode ? Colors.white : Color(0xFF333333);
-        final Color timeColor = isDarkMode ? Colors.grey : Color(0xFF555555);
-        final Color dateColor = isDarkMode ? Colors.grey : Color(0xFF999999);
-        final Color chipTextColor = isDarkMode ? Color(0xFFFE91A1) : Color(0xFFFE91A1);
-        final Color chipBackgroundColor = isDarkMode ? Color(0xFF3E3E3E) : Color(0xFFFEF3F3);
-        final Color favoriteColor = isDarkMode ? Color(0xFFFF6B6B) : Color(0xFFFE91A1);
-        final Color favoriteBorderColor = isDarkMode ? Colors.grey : Color(0xFF999999);
-        final Color deleteBackgroundColor = isDarkMode ? Color(0xFFFF4444) : Colors.redAccent;
+        final Color backgroundColor = isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
+        final Color textColor = isDarkMode ? Colors.white : const Color(0xFF333333);
+        final Color timeColor = isDarkMode ? Colors.grey : const Color(0xFF555555);
+        final Color dateColor = isDarkMode ? Colors.grey : const Color(0xFF999999);
+        final Color chipTextColor = isDarkMode ? const Color(0xFFFE91A1) : const Color(0xFFFE91A1);
+        final Color chipBackgroundColor = isDarkMode ? const Color(0xFF3E3E3E) : const Color(0xFFFEF3F3);
+        final Color favoriteColor = isDarkMode ? const Color(0xFFFF6B6B) : const Color(0xFFFE91A1);
+        final Color favoriteBorderColor = isDarkMode ? Colors.grey : const Color(0xFF999999);
+        final Color deleteBackgroundColor = isDarkMode ? const Color(0xFFFF4444) : Colors.redAccent;
 
         return ListView.builder(
           padding: EdgeInsets.symmetric(
@@ -73,7 +73,7 @@ class DiaryListView extends StatelessWidget {
                     if (displayTimeLeft)
                       // 左側に時間を表示
                       Container(
-                        padding: EdgeInsets.all(bubblePadding),
+                        padding: const EdgeInsets.all(bubblePadding),
                         decoration: BoxDecoration(
                           color: backgroundColor,
                           borderRadius: BorderRadius.circular(borderRadius),
@@ -94,11 +94,11 @@ class DiaryListView extends StatelessWidget {
                           ),
                         ),
                       ),
-                    if (displayTimeLeft) SizedBox(width: horizontalPadding / 2),
+                    if (displayTimeLeft) const SizedBox(width: horizontalPadding / 2),
                     // メッセージバブル
                     Expanded(
                       child: Container(
-                        padding: EdgeInsets.all(bubblePadding),
+                        padding: const EdgeInsets.all(bubblePadding),
                         decoration: BoxDecoration(
                           color: backgroundColor,
                           borderRadius: BorderRadius.circular(borderRadius),
@@ -169,8 +169,8 @@ class DiaryListView extends StatelessWidget {
                                       size: deviceInfo.fontSize * 0.85,
                                     ),
                                     onPressed: () => onToggleFavorite(diary),
-                                    padding: EdgeInsets.all(iconPadding),
-                                    constraints: BoxConstraints(),
+                                    padding: const EdgeInsets.all(iconPadding),
+                                    constraints: const BoxConstraints(),
                                   ),
                               ],
                             ),

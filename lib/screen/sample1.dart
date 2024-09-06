@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ReflectionListScreen extends StatelessWidget {
+  const ReflectionListScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     // ダミーデータとして振り返りのリストを用意
@@ -13,14 +15,14 @@ class ReflectionListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('振り返りリスト'),
+        title: const Text('振り返りリスト'),
       ),
       body: ListView.builder(
         itemCount: reflections.length,
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(reflections[index]),
-            trailing: Icon(Icons.play_arrow),
+            trailing: const Icon(Icons.play_arrow),
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -40,7 +42,7 @@ class ReflectionListScreen extends StatelessWidget {
 class ReflectionScreen extends StatefulWidget {
   final String reflectionText;
 
-  ReflectionScreen({required this.reflectionText});
+  const ReflectionScreen({super.key, required this.reflectionText});
 
   @override
   _ReflectionScreenState createState() => _ReflectionScreenState();
@@ -79,10 +81,10 @@ class _ReflectionScreenState extends State<ReflectionScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('振り返り'),
+        title: const Text('振り返り'),
         actions: [
           IconButton(
-            icon: Icon(Icons.stop),
+            icon: const Icon(Icons.stop),
             onPressed: _stopAnimation,
           ),
         ],
@@ -97,11 +99,11 @@ class _ReflectionScreenState extends State<ReflectionScreen>
                 child: _isStopped
                     ? Text(
                         widget.reflectionText,
-                        style: TextStyle(fontSize: 24),
+                        style: const TextStyle(fontSize: 24),
                       )
                     : Text(
                         widget.reflectionText,
-                        style: TextStyle(fontSize: 24),
+                        style: const TextStyle(fontSize: 24),
                       ),
               ),
             ),
@@ -131,6 +133,8 @@ class _ReflectionScreenState extends State<ReflectionScreen>
 }
 
 class FloatingTextScreen extends StatefulWidget {
+  const FloatingTextScreen({super.key});
+
   @override
   _FloatingTextScreenState createState() => _FloatingTextScreenState();
 }
@@ -159,7 +163,7 @@ class _FloatingTextScreenState extends State<FloatingTextScreen> {
         setState(() {
           _currentIndex++;
         });
-        await Future.delayed(Duration(seconds: 3));
+        await Future.delayed(const Duration(seconds: 3));
         return true;
       } else {
         return false;
@@ -177,10 +181,10 @@ class _FloatingTextScreenState extends State<FloatingTextScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Floating Text Animation'),
+        title: const Text('Floating Text Animation'),
         actions: [
           IconButton(
-            icon: Icon(Icons.stop),
+            icon: const Icon(Icons.stop),
             onPressed: _stopAnimation,
           ),
         ],
@@ -204,7 +208,7 @@ class _FloatingTextScreenState extends State<FloatingTextScreen> {
 class AnimatedBubble extends StatefulWidget {
   final String text;
 
-  AnimatedBubble({required this.text});
+  const AnimatedBubble({super.key, required this.text});
 
   @override
   _AnimatedBubbleState createState() => _AnimatedBubbleState();
@@ -265,15 +269,15 @@ class _AnimatedBubbleState extends State<AnimatedBubble>
           child: Opacity(
             opacity: _opacityAnimation.value,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              margin: EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              margin: const EdgeInsets.symmetric(vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.blueAccent,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 widget.text,
-                style: TextStyle(fontSize: 14, color: Colors.white),
+                style: const TextStyle(fontSize: 14, color: Colors.white),
               ),
             ),
           ),

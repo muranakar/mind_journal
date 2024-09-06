@@ -4,7 +4,42 @@ import 'package:provider/provider.dart';
 import 'package:mind_journal/screen/calendar.dart';
 import 'package:mind_journal/screen/diaryList.dart';
 import 'package:mind_journal/screen/home.dart';
-import 'package:mind_journal/screen/settings.dart'; // DeviceInfoのインポート
+import 'package:mind_journal/screen/settings.dart';
+import 'package:mind_journal/screen/tagSearch.dart'; // TagSearchScreenのインポート
+
+// 共通定数の定義
+const double floatingButtonIconSize = 24.0;
+const double floatingButtonElevation = 0.0;
+const double floatingButtonShadowBlurRadius = 10.0;
+const double floatingButtonShadowSpreadRadius = 1.0;
+const Offset floatingButtonShadowOffset = Offset(0, 5);
+
+// ライトモードの色定数
+const Color lightIndicatorColor = Color(0xFFB2DFDB);
+const Color lightFloatingButtonColor = Color(0xFF81C784);
+const Color lightFloatingButtonIconColor = Colors.white;
+const Color lightHomeIconColor = Colors.teal;
+const Color lightCalendarIconColor = Colors.cyan;
+const Color lightListIconColor = Colors.teal;
+const Color lightSettingsIconColor = Colors.blueGrey;
+const Color lightTagSearchIconColor = Colors.orange; // 新しいアイコンの色
+
+// ダークモードの色定数
+const Color darkIndicatorColor = Color(0xFF37474F);
+const Color darkFloatingButtonColor = Color(0xFF81C784);
+const Color darkFloatingButtonIconColor = Colors.white;
+const Color darkHomeIconColor = Colors.grey;
+const Color darkCalendarIconColor = Colors.grey;
+const Color darkListIconColor = Colors.grey;
+const Color darkSettingsIconColor = Colors.grey;
+const Color darkTagSearchIconColor = Colors.orange; // 新しいアイコンの色
+
+// 文言定数
+const String homeLabel = 'Home';
+const String calendarLabel = 'Calendar';
+const String listLabel = 'List';
+const String settingsLabel = 'Settings';
+const String tagSearchLabel = 'Tag Search'; // 新しいラベル
 
 void main() {
   runApp(
@@ -50,6 +85,19 @@ class _NavigationExampleState extends State<NavigationExample> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceInfo = Provider.of<DeviceInfo>(context);
+    final bool isDarkMode = deviceInfo.isDarkMode;
+
+    // ダークモード対応の色を選択
+    final Color indicatorColor = isDarkMode ? darkIndicatorColor : lightIndicatorColor;
+    final Color floatingButtonColor = isDarkMode ? darkFloatingButtonColor : lightFloatingButtonColor;
+    final Color floatingButtonIconColor = isDarkMode ? darkFloatingButtonIconColor : lightFloatingButtonIconColor;
+    final Color homeIconColor = isDarkMode ? darkHomeIconColor : lightHomeIconColor;
+    final Color calendarIconColor = isDarkMode ? darkCalendarIconColor : lightCalendarIconColor;
+    final Color listIconColor = isDarkMode ? darkListIconColor : lightListIconColor;
+    final Color settingsIconColor = isDarkMode ? darkSettingsIconColor : lightSettingsIconColor;
+    final Color tagSearchIconColor = isDarkMode ? darkListIconColor : lightListIconColor;
+
     return Scaffold(
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -57,33 +105,34 @@ class _NavigationExampleState extends State<NavigationExample> {
             currentPageIndex = index;
           });
         },
-        indicatorColor: Colors.green[100],
+        indicatorColor: indicatorColor,
         selectedIndex: currentPageIndex,
-        destinations: const <Widget>[
+        destinations: <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.note_alt_outlined),
-            icon: Icon(Icons.note_alt_outlined, color: Colors.teal),
-            label: 'Home',
+            selectedIcon: const Icon(Icons.note_alt_outlined),
+            icon: Icon(Icons.note_alt_outlined, color: homeIconColor),
+            label: homeLabel,
           ),
           NavigationDestination(
-            icon: Icon(Icons.calendar_month_outlined, color: Colors.cyan),
-            label: 'Calendar',
+            icon: Icon(Icons.calendar_month_outlined, color: calendarIconColor),
+            label: calendarLabel,
+          ),
+          NavigationDestination( // 新しいタグ検索画面へのアイコンを追加
+            icon: Icon(Icons.tag, color: tagSearchIconColor),
+            label: tagSearchLabel,
           ),
           NavigationDestination(
-            icon: Icon(Icons.list_alt, color: Colors.teal),
-            label: 'List',
+            icon: Icon(Icons.list_alt, color: listIconColor),
+            label: listLabel,
           ),
           NavigationDestination(
-            icon: Icon(
-              Icons.settings,
-              color: Colors.blueGrey,
-            ),
-            label: 'Sample',
+            icon: Icon(Icons.settings, color: settingsIconColor),
+            label: settingsLabel,
           ),
+          
         ],
       ),
       body: <Widget>[
-        /// Home page
         Card(
           shadowColor: Colors.transparent,
           margin: const EdgeInsets.all(8.0),
@@ -99,6 +148,15 @@ class _NavigationExampleState extends State<NavigationExample> {
           child: SizedBox.expand(
             child: Center(
               child: DiaryListWithCalendarScreen(),
+            ),
+          ),
+        ),
+        Card( // 新しいタグ検索画面を追加
+          shadowColor: Colors.transparent,
+          margin: const EdgeInsets.all(8.0),
+          child: SizedBox.expand(
+            child: Center(
+              child: TagSearchScreen(), // タグ検索画面の表示
             ),
           ),
         ),
@@ -120,40 +178,40 @@ class _NavigationExampleState extends State<NavigationExample> {
             ),
           ),
         ),
+        
       ][currentPageIndex],
       floatingActionButton: (currentPageIndex == 1 ||
               currentPageIndex == 2 ||
               currentPageIndex == 3)
           ? FloatingActionButton(
               onPressed: () {
-                // ここに日記を追加する画面への遷移などの処理を実装
                 setState(() {
                   currentPageIndex = 0;
                 });
               },
-              backgroundColor: Colors.transparent, // ボタンの背景を透明にする
-              elevation: 0.0,
+              backgroundColor: Colors.transparent,
+              elevation: floatingButtonElevation,
               child: Container(
                 width: double.infinity,
                 height: double.infinity,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.green[300], // 背景色を指定
+                  color: floatingButtonColor,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2), // 影の色を指定
-                      spreadRadius: 1, // 影の広がりを指定
-                      blurRadius: 10, // 影のぼかし具合を指定
-                      offset: const Offset(0, 5), // 影の位置を指定 (x, y)
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: floatingButtonShadowSpreadRadius,
+                      blurRadius: floatingButtonShadowBlurRadius,
+                      offset: floatingButtonShadowOffset,
                     ),
                   ],
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.mode,
-                  color: Colors.white, // アイコンの色を白に指定
-                  size: 24.0, // アイコンのサイズを調整
+                  color: floatingButtonIconColor,
+                  size: floatingButtonIconSize,
                 ),
-              ), // デフォルトの影を削除
+              ),
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

@@ -4,6 +4,8 @@ import 'package:mind_journal/model/diary.dart';
 import 'package:mind_journal/screen/component/DiaryListView.dart';
 
 class DiaryListScreen extends StatefulWidget {
+  const DiaryListScreen({super.key});
+
   @override
   _DiaryListScreenState createState() => _DiaryListScreenState();
 }
@@ -86,18 +88,23 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GestureDetector( //こちらを追加
+    onTap: () {
+      FocusScope.of(context).unfocus();
+    },
+    child: Scaffold(
       appBar: AppBar(
         elevation: appBarElevation,
         centerTitle: true,
-        iconTheme: IconThemeData(color: appBarIconColor),
+        iconTheme: const IconThemeData(color: appBarIconColor),
         title: TextField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'キーワード検索できます🔍',
             border: InputBorder.none,
             hintStyle: TextStyle(color: searchHintColor),
           ),
           onChanged: _updateSearchQuery,
+          autofocus: true,
         ),
         actions: [
           IconButton(
@@ -148,6 +155,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
           );
         },
       ),
-    );
+    )
+  );
   }
 }
