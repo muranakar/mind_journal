@@ -31,6 +31,13 @@ class DiaryDatabase {
 
     return database;
   }
+  Future<Database> get testDatabase async {
+    if (_database != null) return _database!;
+
+    // 一時的なテストデータベースを作成
+    _database = await _initDB('test_diaries.db');
+    return _database!;
+  }
 
   Future _createDB(Database db, int version) async {
     await db.execute('''
@@ -84,7 +91,6 @@ class DiaryDatabase {
 
     final id = await db.insert('diaries', diary.toMap());
     diary.id = id;
-
     // タグの関連付け
     for (String tag in diary.tags) {
       final tagId = await db.insert('tags', {'name': tag});
