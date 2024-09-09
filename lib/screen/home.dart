@@ -20,7 +20,8 @@ const Color floatingActionButtonColor = Color(0xFF81C784);
 class HomeScreen extends StatefulWidget {
   final Function(int) onTabSelected; // タブのインデックスを変更するためのコールバック関数
 
-  const HomeScreen({super.key, required this.onTabSelected}); // コンストラクタでコールバック関数を受け取る
+  const HomeScreen(
+      {super.key, required this.onTabSelected}); // コンストラクタでコールバック関数を受け取る
 
   @override
   _HomeScreen createState() => _HomeScreen();
@@ -243,11 +244,11 @@ class _HomeScreen extends State<HomeScreen> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-
                     Diary newDiary = Diary(
                       title: '',
                       content: _content,
-                      tags: _tags,
+                      isFavorite: false,
+                      tags: _tags.toList(),
                       createdAt: DateTime.now(),
                       updatedAt: DateTime.now(),
                       emotionImage: _emotion,
