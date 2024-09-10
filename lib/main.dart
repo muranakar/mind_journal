@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mind_journal/provider/deviceInfo.dart';
 import 'package:provider/provider.dart';
-import 'package:mind_journal/screen/calendar.dart';
-import 'package:mind_journal/screen/diaryList.dart';
-import 'package:mind_journal/screen/home.dart';
-import 'package:mind_journal/screen/settings.dart';
-import 'package:mind_journal/screen/tagSearch.dart'; // TagSearchScreenのインポート
+import 'package:mind_journal/screen/calendar/calendar.dart';
+import 'package:mind_journal/screen/diaryList/diaryList.dart';
+import 'package:mind_journal/screen/home/home.dart';
+import 'package:mind_journal/screen/settingScreen/settings.dart';
+import 'package:mind_journal/screen/tag/tagSearch.dart'; // TagSearchScreenのインポート
 
 // 共通定数の定義
 const double floatingButtonIconSize = 24.0;

@@ -31,13 +31,13 @@ class Diary {
     };
   }
 
-  static Diary fromMap(Map<String, dynamic> map) {
+  static Diary fromMap(Map<String, dynamic> map,List<String> tags) {
     return Diary(
       id: map['id'],
       title: map['title'],
       content: map['content'],
       isFavorite: map['is_favorite'] == 1,
-      tags: [],
+      tags: tags.toList(),
       createdAt: DateTime.parse(map['created_at']).toLocal(), // 文字列をDateTimeに変換
       updatedAt: DateTime.parse(map['updated_at']).toLocal(),
       emotionImage: map['emotion_image'],

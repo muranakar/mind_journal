@@ -155,7 +155,7 @@ class _DiaryListWithCalendarScreenState
                   diaries: diaries,
                   onToggleFavorite: _toggleFavorite,
                   onDeleteDiary: _deleteDiary,
-                  displayTimeLeft: true,
+                  isLineStyleUI: true,
                 );
               },
             ),

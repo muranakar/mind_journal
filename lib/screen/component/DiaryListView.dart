@@ -7,7 +7,7 @@ class DiaryListView extends StatelessWidget {
   final List<Diary> diaries;
   final Function(Diary) onToggleFavorite;
   final Function(int) onDeleteDiary;
-  final bool displayTimeLeft;
+  final bool isLineStyleUI;
 
   // 定数化されたレイアウトに関する数値
   static const double verticalPadding = 2.0;
@@ -21,7 +21,7 @@ class DiaryListView extends StatelessWidget {
     required this.diaries,
     required this.onToggleFavorite,
     required this.onDeleteDiary,
-    this.displayTimeLeft = false,
+    this.isLineStyleUI = false,
   });
 
   @override
@@ -70,7 +70,7 @@ class DiaryListView extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (displayTimeLeft)
+                    if (isLineStyleUI)
                       // 左側に時間を表示
                       Container(
                         padding: const EdgeInsets.all(bubblePadding),
@@ -94,8 +94,70 @@ class DiaryListView extends StatelessWidget {
                           ),
                         ),
                       ),
-                    if (displayTimeLeft) const SizedBox(width: horizontalPadding / 2),
+                    if (isLineStyleUI) const SizedBox(width: horizontalPadding / 2),
+                    if (!isLineStyleUI)
                     // メッセージバブル
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(bubblePadding,bubblePadding, 0, 0),
+                        decoration: BoxDecoration(
+                          color: backgroundColor,
+                          borderRadius: BorderRadius.circular(borderRadius),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              offset: Offset(0, 2),
+                              blurRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              diary.content,
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: deviceInfo.fontSize * 0.85,
+                                fontFamily: deviceInfo.font,
+                                height: deviceInfo.lineHeight,
+                                letterSpacing: deviceInfo.letterSpacing,
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                // 右下に時間を表示
+                                  Text(
+                                    dateString,
+                                    style: TextStyle(
+                                      color: dateColor,
+                                      fontSize: deviceInfo.fontSize * 0.6,
+                                      fontFamily: deviceInfo.font,
+                                    ),
+                                  ),
+                                // ハートのアイコン
+                                  IconButton(
+                                    icon: Icon(
+                                      diary.isFavorite
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color: diary.isFavorite
+                                          ? favoriteColor
+                                          : favoriteBorderColor,
+                                      size: deviceInfo.fontSize * 0.85,
+                                    ),
+                                    onPressed: () => onToggleFavorite(diary),
+                                    padding: const EdgeInsets.all(iconPadding),
+                                    constraints: const BoxConstraints(),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (isLineStyleUI)
                     Expanded(
                       child: Container(
                         padding: const EdgeInsets.all(bubblePadding),
@@ -122,57 +184,6 @@ class DiaryListView extends StatelessWidget {
                                 height: deviceInfo.lineHeight,
                                 letterSpacing: deviceInfo.letterSpacing,
                               ),
-                            ),
-                            if (diary.tags.isNotEmpty)
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: verticalPadding),
-                                child: Wrap(
-                                  spacing: chipSpacing,
-                                  runSpacing: verticalPadding,
-                                  children: diary.tags.map((tag) {
-                                    return Chip(
-                                      label: Text(tag),
-                                      backgroundColor: chipBackgroundColor,
-                                      labelStyle: TextStyle(
-                                        color: chipTextColor,
-                                        fontSize: deviceInfo.fontSize * 0.7,
-                                        fontFamily: deviceInfo.font,
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                // 右下に時間を表示
-                                if (!displayTimeLeft)
-                                  Text(
-                                    dateString,
-                                    style: TextStyle(
-                                      color: dateColor,
-                                      fontSize: deviceInfo.fontSize * 0.6,
-                                      fontFamily: deviceInfo.font,
-                                    ),
-                                  ),
-                                // ハートのアイコン
-                                if (!displayTimeLeft)
-                                  IconButton(
-                                    icon: Icon(
-                                      diary.isFavorite
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      color: diary.isFavorite
-                                          ? favoriteColor
-                                          : favoriteBorderColor,
-                                      size: deviceInfo.fontSize * 0.85,
-                                    ),
-                                    onPressed: () => onToggleFavorite(diary),
-                                    padding: const EdgeInsets.all(iconPadding),
-                                    constraints: const BoxConstraints(),
-                                  ),
-                              ],
                             ),
                           ],
                         ),
