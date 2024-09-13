@@ -111,7 +111,6 @@ class _TagFilteredDiaryListScreenState
               hintStyle: TextStyle(color: searchHintColor),
             ),
             onChanged: _updateSearchQuery,
-            autofocus: true,
           ),
           actions: [
             IconButton(

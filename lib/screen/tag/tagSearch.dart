@@ -40,17 +40,8 @@ class _TagSearchScreenState extends State<TagSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('タグで検索'),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        // スクロール可能にする
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ElevatedButton(
+        actions: [
+          ElevatedButton(
                 onPressed: () async {
                   final filteredDiaries = await _searchDiariesByTags();
                   Navigator.push(
@@ -64,7 +55,13 @@ class _TagSearchScreenState extends State<TagSearchScreen> {
                 },
                 child: const Text('記録を検索'),
               ),
-            ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        // スクロール可能にする
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             FutureBuilder<List<Map<String, dynamic>>>(
               future: _tagList,
               builder: (context, snapshot) {
@@ -102,4 +99,3 @@ class _TagSearchScreenState extends State<TagSearchScreen> {
     );
   }
 }
-

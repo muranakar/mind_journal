@@ -122,26 +122,6 @@ class _HomeScreen extends State<HomeScreen> {
                     const SizedBox(height: formFieldSpacing),
                     Row(
                       children: [
-                        const SizedBox(width: iconButtonSpacing),
-                        ...moods.map((mood) {
-                          return IconButton(
-                            icon: Icon(mood['icon']),
-                            color: _selectedEmotion == mood['label']
-                                ? selectedIconColor
-                                : null,
-                            onPressed: () {
-                              setState(() {
-                                _emotion = mood['label'];
-                                _selectedEmotion = mood['label'];
-                              });
-                            },
-                          );
-                        }),
-                      ],
-                    ),
-                    const SizedBox(height: formFieldSpacing),
-                    Row(
-                      children: [
                         Expanded(
                           child: TextFormField(
                             controller: _tagController,

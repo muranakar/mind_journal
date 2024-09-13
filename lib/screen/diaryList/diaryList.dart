@@ -104,7 +104,6 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
             hintStyle: TextStyle(color: searchHintColor),
           ),
           onChanged: _updateSearchQuery,
-          autofocus: true,
         ),
         actions: [
           IconButton(

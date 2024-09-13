@@ -5,7 +5,7 @@ import 'package:mind_journal/screen/calendar/calendar.dart';
 import 'package:mind_journal/screen/diaryList/diaryList.dart';
 import 'package:mind_journal/screen/home/home.dart';
 import 'package:mind_journal/screen/settingScreen/settings.dart';
-import 'package:mind_journal/screen/tag/tagSearch.dart'; // TagSearchScreenのインポート
+import 'package:mind_journal/screen/tag/tagSearch.dart';
 
 // 共通定数の定義
 const double floatingButtonIconSize = 24.0;
@@ -22,7 +22,7 @@ const Color lightHomeIconColor = Colors.teal;
 const Color lightCalendarIconColor = Colors.cyan;
 const Color lightListIconColor = Colors.teal;
 const Color lightSettingsIconColor = Colors.blueGrey;
-const Color lightTagSearchIconColor = Colors.orange; // 新しいアイコンの色
+const Color lightTagSearchIconColor = Colors.orange; 
 
 // ダークモードの色定数
 const Color darkIndicatorColor = Color(0xFF37474F);
@@ -32,14 +32,14 @@ const Color darkHomeIconColor = Colors.grey;
 const Color darkCalendarIconColor = Colors.grey;
 const Color darkListIconColor = Colors.grey;
 const Color darkSettingsIconColor = Colors.grey;
-const Color darkTagSearchIconColor = Colors.orange; // 新しいアイコンの色
+const Color darkTagSearchIconColor = Colors.orange;
 
 // 文言定数
 const String homeLabel = 'Home';
 const String calendarLabel = 'Calendar';
 const String listLabel = 'List';
 const String settingsLabel = 'Settings';
-const String tagSearchLabel = 'Tag Search'; // 新しいラベル
+const String tagSearchLabel = 'Tag'; 
 
 void main() {
   runApp(
