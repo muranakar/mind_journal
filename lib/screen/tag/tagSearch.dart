@@ -48,7 +48,7 @@ class _TagSearchScreenState extends State<TagSearchScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => TagFilteredDiaryListScreen(
-                    filteredDiaries: filteredDiaries,
+                    selectedTags: _selectedTags,
                   ),
                 ),
               );

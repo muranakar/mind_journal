@@ -71,23 +71,22 @@ class DiaryDatabase {
   }
 
   Future _insertInitialTags(Database db) async {
-    
-     const List<String> initialTags = [
-    '不安',
-    '喜び',
-    '怒り',
-    '悲しみ',
-    'イライラ',
-    'モヤモヤ',
-    '悔しい',
-    '感謝',
-    '希望',
-    '嬉しい',
-    '仕事',
-    '友達',
-    '家族',
-    '趣味'
-  ];
+    const List<String> initialTags = [
+      '不安',
+      '喜び',
+      '怒り',
+      '悲しみ',
+      'イライラ',
+      'モヤモヤ',
+      '悔しい',
+      '感謝',
+      '希望',
+      '嬉しい',
+      '仕事',
+      '友達',
+      '家族',
+      '趣味'
+    ];
 
     // タグが既に挿入されているか確認
     final count =
@@ -194,18 +193,19 @@ class DiaryDatabase {
     return tagCounts;
   }
 
-  Future<List<Diary>> filterDiariesBySelectedTags(List<String> selectedTags) async {
-  final db = await DiaryDatabase.instance.database;
+  Future<List<Diary>> filterDiariesBySelectedTags(
+      List<String> selectedTags) async {
+    final db = await DiaryDatabase.instance.database;
 
-  if (selectedTags.isEmpty) {
-    // タグが選択されていない場合は全ての日記を取得
-    final result = await db.query('diaries');
-    return result.map((map) => Diary.fromMap(map, [])).toList();
-  }
+    if (selectedTags.isEmpty) {
+      // タグが選択されていない場合は全ての日記を取得
+      final result = await db.query('diaries');
+      return result.map((map) => Diary.fromMap(map, [])).toList();
+    }
 
-  // タグが選択されている場合、選択されたタグに一致する日記を取得
-  final tagPlaceholders = List.filled(selectedTags.length, '?').join(', ');
-  final result = await db.rawQuery('''
+    // タグが選択されている場合、選択されたタグに一致する日記を取得
+    final tagPlaceholders = List.filled(selectedTags.length, '?').join(', ');
+    final result = await db.rawQuery('''
     SELECT DISTINCT diaries.*
     FROM diaries
     JOIN diary_tags ON diaries.id = diary_tags.diary_id
@@ -213,9 +213,8 @@ class DiaryDatabase {
     WHERE tags.name IN ($tagPlaceholders)
   ''', selectedTags);
 
-  return result.map((map) => Diary.fromMap(map, selectedTags)).toList();
-}
-
+    return result.map((map) => Diary.fromMap(map, selectedTags)).toList();
+  }
 
   Future<void> updateDiary(Diary diary) async {
     final db = await instance.database;
@@ -234,10 +233,10 @@ class DiaryDatabase {
     await db.delete('diaries', where: 'id = ?', whereArgs: [id]);
   }
 
-Future<List<String>> fetchAllTagsSortedByUsage() async {
-  final db = await instance.database;
+  Future<List<String>> fetchAllTagsSortedByUsage() async {
+    final db = await instance.database;
 
-  final result = await db.rawQuery('''
+    final result = await db.rawQuery('''
     SELECT tags.name
     FROM tags
     LEFT JOIN diary_tags ON tags.id = diary_tags.tag_id
@@ -251,12 +250,12 @@ Future<List<String>> fetchAllTagsSortedByUsage() async {
       tags.id ASC
   ''');
 
-  return result.map((map) => map['name'] as String).toList();
-}
+    return result.map((map) => map['name'] as String).toList();
+  }
 
   Future<List<Map<String, dynamic>>> fetchAllMapTagsSortedByUsage() async {
-  final db = await instance.database;
-  final result = await db.rawQuery('''
+    final db = await instance.database;
+    final result = await db.rawQuery('''
     SELECT tags.name, COUNT(diary_tags.diary_id) as count
     FROM tags
     LEFT JOIN diary_tags ON tags.id = diary_tags.tag_id
@@ -264,14 +263,33 @@ Future<List<String>> fetchAllTagsSortedByUsage() async {
     ORDER BY count DESC
   ''');
 
-  // タグ名と件数を保持したMapを返す
-  return result.map((row) {
-    return {
-      'name': row['name'] as String,
-      'count': row['count'] as int,
-    };
-  }).toList();
-}
+    // タグ名と件数を保持したMapを返す
+    return result.map((row) {
+      return {
+        'name': row['name'] as String,
+        'count': row['count'] as int,
+      };
+    }).toList();
+  }
+
+  Future<List<Diary>> getDiariesByTags(List<String> tags) async {
+    if (tags.isEmpty) {
+      return [];
+    }
+
+    final placeholders = List.filled(tags.length, '?').join(',');
+    final db = await instance.database;
+    final results = await db.rawQuery('''
+    SELECT DISTINCT d.*, GROUP_CONCAT(t.name) AS tag_names
+    FROM diaries d
+    JOIN diary_tags dt ON d.id = dt.diary_id
+    JOIN tags t ON dt.tag_id = t.id
+    WHERE t.name IN ($placeholders)
+    GROUP BY d.id
+  ''', tags);
+
+    return results.map((map) => Diary.fromMap(map, [])).toList();
+  }
 
   Future close() async {
     final db = await instance.database;

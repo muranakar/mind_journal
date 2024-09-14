@@ -4,11 +4,11 @@ import 'package:mind_journal/model/diary.dart';
 import 'package:mind_journal/screen/component/DiaryListView.dart';
 
 class TagFilteredDiaryListScreen extends StatefulWidget {
-  final List<Diary> filteredDiaries; // filteredDiariesを受け取る引数
+  final List<String> selectedTags;
 
   const TagFilteredDiaryListScreen({
     Key? key,
-    required this.filteredDiaries, // コンストラクタでリストを必須に
+    required this.selectedTags,
   }) : super(key: key);
 
   @override
@@ -18,12 +18,12 @@ class TagFilteredDiaryListScreen extends StatefulWidget {
 
 class _TagFilteredDiaryListScreenState
     extends State<TagFilteredDiaryListScreen> {
-  late List<Diary> _diaryList; // 非同期ではなく、直接リストを扱う
+  late List<Diary> _diaryList = [];
   String _searchQuery = '';
-  bool _showFavoritesOnly = false; // お気に入りのみ表示するかどうか
-  bool _isDescending = true; // 昇順・降順の切り替え
+  bool _showFavoritesOnly = false;
+  bool _isDescending = true;
+  List<String> _selectedTags = [];
 
-  // 定数の宣言
   static const Color appBarIconColor = Color(0xFF333333);
   static const Color searchHintColor = Color(0xFF888888);
   static const Color favoriteIconColorActive = Color(0xFFFE91A1);
@@ -34,22 +34,26 @@ class _TagFilteredDiaryListScreenState
   @override
   void initState() {
     super.initState();
-    _diaryList = widget.filteredDiaries; // 渡されたリストを初期リストとして設定
+    _selectedTags = List.from(widget.selectedTags);
+    _loadDiaries();
+  }
+
+  Future<void> _loadDiaries() async {
+    final diaries = await DiaryDatabase.instance.getDiariesByTags(_selectedTags);
+    setState(() {
+      _diaryList = diaries;
+    });
   }
 
   Future<void> _toggleFavorite(Diary diary) async {
     diary.isFavorite = !diary.isFavorite;
     await DiaryDatabase.instance.updateDiary(diary);
-    setState(() {
-      _diaryList = widget.filteredDiaries;
-    });
+    await _loadDiaries();
   }
 
   Future<void> _deleteDiary(int id) async {
     await DiaryDatabase.instance.deleteDiary(id);
-    setState(() {
-      _diaryList = widget.filteredDiaries;
-    });
+    await _loadDiaries();
   }
 
   void _updateSearchQuery(String query) {
@@ -86,7 +90,6 @@ class _TagFilteredDiaryListScreenState
         return titleMatch || contentMatch || tagsMatch;
       }).toList();
     }
-    // 日記を昇順または降順に並び替える
     filteredDiaries.sort((a, b) => _isDescending
         ? b.createdAt.compareTo(a.createdAt)
         : a.createdAt.compareTo(b.createdAt));
