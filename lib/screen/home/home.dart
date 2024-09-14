@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 const double paddingHorizontal = 5.0;
 const double paddingTop = 100.0;
 const double tagContainerHeight = 40.0;
-const double recommendedTagsContainerHeight = 170.0;
+const double recommendedTagsContainerHeight = 220.0;
 const double iconButtonSpacing = 16.0;
 const double floatingActionButtonTop = 50.0;
 const double floatingActionButtonRight = 10.0;

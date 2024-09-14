@@ -42,19 +42,19 @@ class _TagSearchScreenState extends State<TagSearchScreen> {
       appBar: AppBar(
         actions: [
           ElevatedButton(
-                onPressed: () async {
-                  final filteredDiaries = await _searchDiariesByTags();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TagFilteredDiaryListScreen(
-                        filteredDiaries: filteredDiaries,
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('記録を検索'),
-              ),
+            onPressed: () async {
+              final filteredDiaries = await _searchDiariesByTags();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TagFilteredDiaryListScreen(
+                    filteredDiaries: filteredDiaries,
+                  ),
+                ),
+              );
+            },
+            child: const Text('記録を検索'),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -77,12 +77,16 @@ class _TagSearchScreenState extends State<TagSearchScreen> {
 
                 return Wrap(
                   spacing: 8.0,
-                  children: tags.map((tagData) {
+                  children: tags
+                      .where((tagData) =>
+                          (tagData['count'] is int) && (tagData['count'] > 0))
+                      .map((tagData) {
                     final tagName = tagData['name'];
-                    final tagCount = tagData['count'];
+                    final tagCount = tagData['count'] as int;
                     final isSelected = _selectedTags.contains(tagName);
+
                     return FilterChip(
-                      label: Text('$tagName ($tagCount)'), // タグ名と件数を表示
+                      label: Text('$tagName ($tagCount)'),
                       selected: isSelected,
                       onSelected: (selected) {
                         _toggleTagSelection(tagName);

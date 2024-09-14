@@ -71,28 +71,23 @@ class DiaryDatabase {
   }
 
   Future _insertInitialTags(Database db) async {
-    const List<String> initialTags = [
-      '不安',
-      '喜び',
-      '怒り',
-      '悲しみ',
-      'イライラ',
-      '安心',
-      '安堵',
-      '満足',
-      '孤独感',
-      '恐怖',
-      '焦り',
-      '悔しさ',
-      '罪悪感',
-      '感謝',
-      '恥',
-      '無力感',
-      '嫉妬',
-      '驚き',
-      '困惑',
-      '希望'
-    ];
+    
+     const List<String> initialTags = [
+    '不安',
+    '喜び',
+    '怒り',
+    '悲しみ',
+    'イライラ',
+    'モヤモヤ',
+    '悔しい',
+    '感謝',
+    '希望',
+    '嬉しい',
+    '仕事',
+    '友達',
+    '家族',
+    '趣味'
+  ];
 
     // タグが既に挿入されているか確認
     final count =
@@ -239,19 +234,25 @@ class DiaryDatabase {
     await db.delete('diaries', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<List<String>> fetchAllTagsSortedByUsage() async {
-    final db = await instance.database;
+Future<List<String>> fetchAllTagsSortedByUsage() async {
+  final db = await instance.database;
 
-    final result = await db.rawQuery('''
-    SELECT tags.name, COUNT(diary_tags.tag_id) as tag_count
+  final result = await db.rawQuery('''
+    SELECT tags.name
     FROM tags
     LEFT JOIN diary_tags ON tags.id = diary_tags.tag_id
-    GROUP BY tags.name
-    ORDER BY tag_count DESC
+    GROUP BY tags.id, tags.name
+    ORDER BY 
+      CASE 
+        WHEN COUNT(diary_tags.tag_id) = 0 THEN 1
+        ELSE 0
+      END,
+      COUNT(diary_tags.tag_id) DESC,
+      tags.id ASC
   ''');
 
-    return result.map((map) => map['name'] as String).toList();
-  }
+  return result.map((map) => map['name'] as String).toList();
+}
 
   Future<List<Map<String, dynamic>>> fetchAllMapTagsSortedByUsage() async {
   final db = await instance.database;
@@ -271,7 +272,6 @@ class DiaryDatabase {
     };
   }).toList();
 }
-
 
   Future close() async {
     final db = await instance.database;
