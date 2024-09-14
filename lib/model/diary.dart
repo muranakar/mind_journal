@@ -43,4 +43,25 @@ class Diary {
       emotionImage: map['emotion_image'],
     );
   }
+     Diary copyWith({
+    int? id,
+    String? title,
+    String? content,
+    bool? isFavorite,
+    List<String>? tags,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? emotionImage,
+  }) {
+    return Diary(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      isFavorite: isFavorite ?? this.isFavorite,
+      tags: tags ?? List.from(this.tags),
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      emotionImage: emotionImage ?? this.emotionImage,
+    );
+  }
 }

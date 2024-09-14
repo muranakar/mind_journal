@@ -230,24 +230,39 @@ class DiaryDatabase {
   Future<void> deleteDiary(int id) async {
     final db = await instance.database;
 
-    await db.delete('diaries', where: 'id = ?', whereArgs: [id]);
+    await db.transaction((txn) async {
+      // 削除される日記に関連するタグのIDを取得
+      List<Map<String, dynamic>> relatedTags = await txn.query('diary_tags',
+          columns: ['tag_id'], where: 'diary_id = ?', whereArgs: [id]);
+
+      // 日記エントリの削除
+      await txn.delete('diaries', where: 'id = ?', whereArgs: [id]);
+
+      // diary_tags テーブルから関連エントリを削除
+      await txn.delete('diary_tags', where: 'diary_id = ?', whereArgs: [id]);
+
+      // 関連していたタグを tags テーブルから削除
+      for (var tag in relatedTags) {
+        await txn.delete('tags', where: 'id = ?', whereArgs: [tag['tag_id']]);
+      }
+    });
   }
 
   Future<List<String>> fetchAllTagsSortedByUsage() async {
     final db = await instance.database;
 
     final result = await db.rawQuery('''
-    SELECT tags.name
-    FROM tags
-    LEFT JOIN diary_tags ON tags.id = diary_tags.tag_id
-    GROUP BY tags.id, tags.name
-    ORDER BY 
-      CASE 
-        WHEN COUNT(diary_tags.tag_id) = 0 THEN 1
-        ELSE 0
-      END,
-      COUNT(diary_tags.tag_id) DESC,
-      tags.id ASC
+  SELECT DISTINCT tags.name
+  FROM tags
+  LEFT JOIN diary_tags ON tags.id = diary_tags.tag_id
+  GROUP BY tags.name
+  ORDER BY 
+    CASE 
+      WHEN COUNT(diary_tags.tag_id) = 0 THEN 1
+      ELSE 0
+    END,
+    COUNT(diary_tags.tag_id) DESC,
+    MIN(tags.id) ASC
   ''');
 
     return result.map((map) => map['name'] as String).toList();
