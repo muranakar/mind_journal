@@ -33,16 +33,12 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
   Future<void> _toggleFavorite(Diary diary) async {
     diary.isFavorite = !diary.isFavorite;
     await DiaryDatabase.instance.updateDiary(diary);
-    setState(() {
-      _diaryList = DiaryDatabase.instance.readAllDiaries();
-    });
+    _diaryList = DiaryDatabase.instance.readAllDiaries();
   }
 
   Future<void> _deleteDiary(int id) async {
     await DiaryDatabase.instance.deleteDiary(id);
-    setState(() {
-      _diaryList = DiaryDatabase.instance.readAllDiaries();
-    });
+    _diaryList = DiaryDatabase.instance.readAllDiaries();
   }
 
   void _updateSearchQuery(String query) {
@@ -88,73 +84,73 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector( //こちらを追加
-    onTap: () {
-      FocusScope.of(context).unfocus();
-    },
-    child: Scaffold(
-      appBar: AppBar(
-        elevation: appBarElevation,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: appBarIconColor),
-        title: TextField(
-          decoration: const InputDecoration(
-            hintText: 'キーワード検索できます🔍',
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: searchHintColor),
-          ),
-          onChanged: _updateSearchQuery,
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              _showFavoritesOnly ? Icons.favorite : Icons.favorite_border,
-              color: _showFavoritesOnly
-                  ? favoriteIconColorActive
-                  : favoriteIconColorInactive,
-            ),
-            onPressed: _toggleShowFavorites,
-          ),
-          IconButton(
-            icon: Icon(
-              _isDescending ? Icons.arrow_downward : Icons.arrow_upward,
-              color: appBarIconColor,
-            ),
-            onPressed: _toggleSortOrder,
-          ),
-        ],
-      ),
-      body: FutureBuilder<List<Diary>>(
-        future: _diaryList,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child:
-                    CircularProgressIndicator(color: favoriteIconColorActive));
-          } else if (snapshot.hasError) {
-            return Center(child: Text('エラーが発生しました: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text(
-                'まだ日記がありません',
-                style: TextStyle(
-                  fontSize: appBarFontSize,
-                  color: searchHintColor,
-                ),
-              ),
-            );
-          }
-
-          final filteredDiaries = _filterDiaries(snapshot.data!);
-
-          return DiaryListView(
-            diaries: filteredDiaries,
-            onToggleFavorite: _toggleFavorite,
-            onDeleteDiary: _deleteDiary,
-          );
+    return GestureDetector(
+        //こちらを追加
+        onTap: () {
+          FocusScope.of(context).unfocus();
         },
-      ),
-    )
-  );
+        child: Scaffold(
+          appBar: AppBar(
+            elevation: appBarElevation,
+            centerTitle: true,
+            iconTheme: const IconThemeData(color: appBarIconColor),
+            title: TextField(
+              decoration: const InputDecoration(
+                hintText: 'キーワード検索できます🔍',
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: searchHintColor),
+              ),
+              onChanged: _updateSearchQuery,
+            ),
+            actions: [
+              IconButton(
+                icon: Icon(
+                  _showFavoritesOnly ? Icons.favorite : Icons.favorite_border,
+                  color: _showFavoritesOnly
+                      ? favoriteIconColorActive
+                      : favoriteIconColorInactive,
+                ),
+                onPressed: _toggleShowFavorites,
+              ),
+              IconButton(
+                icon: Icon(
+                  _isDescending ? Icons.arrow_downward : Icons.arrow_upward,
+                  color: appBarIconColor,
+                ),
+                onPressed: _toggleSortOrder,
+              ),
+            ],
+          ),
+          body: FutureBuilder<List<Diary>>(
+            future: _diaryList,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                    child: CircularProgressIndicator(
+                        color: favoriteIconColorActive));
+              } else if (snapshot.hasError) {
+                return Center(child: Text('エラーが発生しました: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'まだ日記がありません',
+                    style: TextStyle(
+                      fontSize: appBarFontSize,
+                      color: searchHintColor,
+                    ),
+                  ),
+                );
+              }
+
+              final filteredDiaries = _filterDiaries(snapshot.data!);
+
+              return DiaryListView(
+                diaries: filteredDiaries,
+                onToggleFavorite: _toggleFavorite,
+                onDeleteDiary: _deleteDiary,
+              );
+            },
+          ),
+        ));
   }
 }

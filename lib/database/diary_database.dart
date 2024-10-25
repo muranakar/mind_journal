@@ -99,30 +99,6 @@ class DiaryDatabase {
     }
   }
 
-  Future<List<String>> getTagsForDiary(int diaryId) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'diary_tags',
-      where: 'diary_id = ?',
-      whereArgs: [diaryId],
-    );
-
-    // タグIDを取得し、タグ名を検索する
-    List<String> tags = [];
-    for (var map in maps) {
-      final tagMap = await db.query(
-        'tags',
-        where: 'id = ?',
-        whereArgs: [map['tag_id']],
-      );
-      if (tagMap.isNotEmpty) {
-        tags.add(tagMap.first['name'] as String);
-      }
-    }
-
-    return tags;
-  }
-
   Future<void> createDiary(Diary diary) async {
     final db = await instance.database;
 
@@ -173,26 +149,28 @@ class DiaryDatabase {
     return diaries;
   }
 
-  Future<Map<String, int>> getTagCounts() async {
+  /// ホーム画面用のメソッド
+  Future<List<String>> fetchAllTagsSortedByUsage() async {
     final db = await instance.database;
 
-    // タグごとの関連日記数を取得するクエリ
     final result = await db.rawQuery('''
-    SELECT tags.name, COUNT(diary_tags.diary_id) as count
-    FROM tags
-    LEFT JOIN diary_tags ON tags.id = diary_tags.tag_id
-    GROUP BY tags.name
+  SELECT DISTINCT tags.name
+  FROM tags
+  LEFT JOIN diary_tags ON tags.id = diary_tags.tag_id
+  GROUP BY tags.name
+  ORDER BY 
+    CASE 
+      WHEN COUNT(diary_tags.tag_id) = 0 THEN 1
+      ELSE 0
+    END,
+    COUNT(diary_tags.tag_id) DESC,
+    MIN(tags.id) ASC
   ''');
 
-    // 結果をMapに変換
-    Map<String, int> tagCounts = {};
-    for (var row in result) {
-      tagCounts[row['name'] as String] = row['count'] as int;
-    }
-
-    return tagCounts;
+    return result.map((map) => map['name'] as String).toList();
   }
 
+  /// タグ画面用のメソッド
   Future<List<Diary>> filterDiariesBySelectedTags(
       List<String> selectedTags) async {
     final db = await DiaryDatabase.instance.database;
@@ -216,58 +194,7 @@ class DiaryDatabase {
     return result.map((map) => Diary.fromMap(map, selectedTags)).toList();
   }
 
-  Future<void> updateDiary(Diary diary) async {
-    final db = await instance.database;
-
-    await db.update(
-      'diaries',
-      diary.toMap(),
-      where: 'id = ?',
-      whereArgs: [diary.id],
-    );
-  }
-
-  Future<void> deleteDiary(int id) async {
-    final db = await instance.database;
-
-    await db.transaction((txn) async {
-      // 削除される日記に関連するタグのIDを取得
-      List<Map<String, dynamic>> relatedTags = await txn.query('diary_tags',
-          columns: ['tag_id'], where: 'diary_id = ?', whereArgs: [id]);
-
-      // 日記エントリの削除
-      await txn.delete('diaries', where: 'id = ?', whereArgs: [id]);
-
-      // diary_tags テーブルから関連エントリを削除
-      await txn.delete('diary_tags', where: 'diary_id = ?', whereArgs: [id]);
-
-      // 関連していたタグを tags テーブルから削除
-      for (var tag in relatedTags) {
-        await txn.delete('tags', where: 'id = ?', whereArgs: [tag['tag_id']]);
-      }
-    });
-  }
-
-  Future<List<String>> fetchAllTagsSortedByUsage() async {
-    final db = await instance.database;
-
-    final result = await db.rawQuery('''
-  SELECT DISTINCT tags.name
-  FROM tags
-  LEFT JOIN diary_tags ON tags.id = diary_tags.tag_id
-  GROUP BY tags.name
-  ORDER BY 
-    CASE 
-      WHEN COUNT(diary_tags.tag_id) = 0 THEN 1
-      ELSE 0
-    END,
-    COUNT(diary_tags.tag_id) DESC,
-    MIN(tags.id) ASC
-  ''');
-
-    return result.map((map) => map['name'] as String).toList();
-  }
-
+// タグ検索画面用のメソッド
   Future<List<Map<String, dynamic>>> fetchAllMapTagsSortedByUsage() async {
     final db = await instance.database;
     final result = await db.rawQuery('''
@@ -287,6 +214,7 @@ class DiaryDatabase {
     }).toList();
   }
 
+  /// タグ検索画面用のメソッド
   Future<List<Diary>> getDiariesByTags(List<String> tags) async {
     if (tags.isEmpty) {
       return [];
@@ -304,6 +232,83 @@ class DiaryDatabase {
   ''', tags);
 
     return results.map((map) => Diary.fromMap(map, [])).toList();
+  }
+
+  /// 一覧画面の検索メソッド
+  Future<List<Diary>> searchDiaries(String keyword) async {
+    final db = await instance.database;
+
+    // diariesテーブルからキーワードを含む日記を検索
+    // LIKE演算子で部分一致検索を実行
+    final result = await db.query(
+      'diaries',
+      where: 'content LIKE ?',
+      whereArgs: ['%$keyword%'], // %を使って部分一致検索
+    );
+
+    List<Diary> diaries = [];
+
+    // 検索結果の各日記に関連するタグを取得
+    for (var map in result) {
+      // diary_id をもとに関連するタグを取得
+      final List<Map<String, dynamic>> tagMaps = await db.query(
+        'diary_tags',
+        where: 'diary_id = ?',
+        whereArgs: [map['id']],
+      );
+
+      // タグ名のリストを作成
+      List<String> tags = [];
+      for (var tagMap in tagMaps) {
+        final List<Map<String, dynamic>> tagNameMap = await db.query(
+          'tags',
+          where: 'id = ?',
+          whereArgs: [tagMap['tag_id']],
+        );
+        if (tagNameMap.isNotEmpty) {
+          tags.add(tagNameMap.first['name']);
+        }
+      }
+
+      // Diary オブジェクトを作成してリストに追加
+      diaries.add(Diary.fromMap(map, tags));
+    }
+
+    return diaries;
+  }
+
+  /// 日記の更新
+  Future<void> updateDiary(Diary diary) async {
+    final db = await instance.database;
+
+    await db.update(
+      'diaries',
+      diary.toMap(),
+      where: 'id = ?',
+      whereArgs: [diary.id],
+    );
+  }
+
+  /// 日記の削除
+  Future<void> deleteDiary(int id) async {
+    final db = await instance.database;
+
+    await db.transaction((txn) async {
+      // 削除される日記に関連するタグのIDを取得
+      List<Map<String, dynamic>> relatedTags = await txn.query('diary_tags',
+          columns: ['tag_id'], where: 'diary_id = ?', whereArgs: [id]);
+
+      // 日記エントリの削除
+      await txn.delete('diaries', where: 'id = ?', whereArgs: [id]);
+
+      // diary_tags テーブルから関連エントリを削除
+      await txn.delete('diary_tags', where: 'diary_id = ?', whereArgs: [id]);
+
+      // 関連していたタグを tags テーブルから削除
+      for (var tag in relatedTags) {
+        await txn.delete('tags', where: 'id = ?', whereArgs: [tag['tag_id']]);
+      }
+    });
   }
 
   Future close() async {
