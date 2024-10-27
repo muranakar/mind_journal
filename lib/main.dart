@@ -60,6 +60,7 @@ class NavigationBarApp extends StatelessWidget {
         return MaterialApp(
           darkTheme: ThemeData.dark(),
           themeMode: deviceInfo.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          debugShowCheckedModeBanner: false,
           home: const NavigationExample(),
         );
       },

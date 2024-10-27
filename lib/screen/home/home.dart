@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 const double paddingHorizontal = 5.0;
 const double paddingTop = 100.0;
 const double tagContainerHeight = 40.0;
-const double recommendedTagsContainerHeight = 220.0;
+const double recommendedTagsContainerHeight = 300.0;
 const double iconButtonSpacing = 16.0;
 const double floatingActionButtonTop = 50.0;
 const double floatingActionButtonRight = 10.0;
@@ -89,6 +89,7 @@ class _HomeScreen extends State<HomeScreen> {
                   paddingHorizontal, paddingTop, paddingHorizontal, 5.0),
               child: Form(
                 key: _formKey,
+                child: SingleChildScrollView(
                 child: Column(
                   children: [
                     TextFormField(
@@ -116,7 +117,7 @@ class _HomeScreen extends State<HomeScreen> {
                         }
                         return null;
                       },
-                      maxLines: 2,
+                      maxLines: 4,
                       autofocus: true,
                     ),
                     const SizedBox(height: formFieldSpacing),
@@ -211,9 +212,10 @@ class _HomeScreen extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8.0),
+                      
                     ],
                   ],
+                ),
                 ),
               ),
             ),

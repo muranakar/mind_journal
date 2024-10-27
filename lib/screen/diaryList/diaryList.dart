@@ -74,7 +74,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
             diary.tags.any((tag) => tag.toLowerCase().contains(query));
         return titleMatch || contentMatch || tagsMatch;
       }).toList();
-    }
+    } 
     // 日記を昇順または降順に並び替える
     filteredDiaries.sort((a, b) => _isDescending
         ? b.createdAt.compareTo(a.createdAt)
