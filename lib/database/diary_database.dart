@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:mind_journal/model/diary.dart';
@@ -19,10 +21,10 @@ class DiaryDatabase {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-
     final database = await openDatabase(
       path,
       version: 1,
+      readOnly: false,
       onCreate: (db, version) async {
         await _createDB(db, version);
         await _insertInitialTags(db); // 初回起動時にタグを挿入
@@ -68,6 +70,7 @@ class DiaryDatabase {
       FOREIGN KEY(tag_id) REFERENCES tags(id)
     )
     ''');
+
   }
 
   Future _insertInitialTags(Database db) async {
