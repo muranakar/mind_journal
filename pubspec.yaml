@@ -17,6 +17,8 @@ dependencies:
   shared_preferences: ^2.0.15
   table_calendar: ^3.1.2
   cupertino_icons: ^1.0.8
+  google_mobile_ads: ^1.2.0
+  flutter_launcher_icons: ^0.10.0
 
 dev_dependencies:
   flutter_test:
@@ -88,3 +90,8 @@ flutter:
     - family: 'YujiSyuku'
       fonts:
         - asset: assets/fonts/YujiSyuku-Regular.ttf
+
+flutter_icons:       
+    android: true
+    ios: true
+    image_path: "assets/images/app_icon.png"
