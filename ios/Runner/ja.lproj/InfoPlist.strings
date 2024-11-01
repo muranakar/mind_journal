@@ -1,0 +1,11 @@
+/* 
+  InfoPlist.strings
+  Runner
+
+  Created by 村中令 on 2024/11/02.
+  
+*/
+// ios/en.lproj/InfoPlist.strings
+CFBundleDisplayName = "つぶやき日記";
+
+

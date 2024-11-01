@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  Runner
+
+  Created by 村中令 on 2024/11/02.
+  
+*/
+// ios/ja.lproj/InfoPlist.strings
+CFBundleDisplayName = "Mind Journal";
