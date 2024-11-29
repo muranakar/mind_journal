@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mind_journal/database/diary_database.dart';
 import 'package:mind_journal/model/diary.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:matcher/matcher.dart' as matcher;
@@ -17,7 +16,7 @@ void main() {
 
     // テスト用のデータベースを初期化
     database = DiaryDatabase.instance;
-    await database!.testDatabase;
+    await database.testDatabase;
   });
 
   tearDown(() async {
