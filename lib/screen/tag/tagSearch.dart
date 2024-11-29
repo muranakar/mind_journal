@@ -4,16 +4,6 @@ import 'package:mind_journal/database/diary_database.dart';
 import 'package:mind_journal/model/diary.dart';
 import 'package:mind_journal/screen/tag/tag_filtered_diarylist_screen.dart';
 
-
-// タグ使用状況を管理するプロバイダー
-final tagUsageProvider = FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
-  final database = ref.watch(diaryDatabaseProvider);
-  ref.onDispose(() {
-    ref.invalidateSelf();
-  });
-  return database.fetchTagsWithUsageCount();
-});
-
 // リフレッシュを強制するためのプロバイダー
 final tagUsageRefreshProvider = StateProvider<int>((ref) => 0);
 
