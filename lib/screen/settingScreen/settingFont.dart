@@ -1,54 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:mind_journal/provider/deviceInfo.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mind_journal/main.dart';
 
-class FontSelectionScreen extends StatefulWidget {
+// フォントのリスト
+final fonts = [
+  'HannariMincho',
+  'KiwiMaru',
+  'TsukimiRounded',
+  'ShipporiMincho',
+  'ZenKurenaido', 
+  'KleeOne',
+  'Yomogi',
+  'KaiseiTokumin',
+  'KosugiMaru',
+  'YujiSyuku',
+  'Buildingsandundertherailwaytracks',
+  'RocknRollOne',
+  'DarumadropOne',
+  'HachiMaruPop',
+  'Stick',
+  'MonomaniacOne',
+  'YuseiMagic',
+  'SlacksideOne',
+];
+
+class FontSelectionScreen extends ConsumerStatefulWidget {
   const FontSelectionScreen({super.key});
 
   @override
-  _FontSelectionScreenState createState() => _FontSelectionScreenState();
+  ConsumerState<FontSelectionScreen> createState() => _FontSelectionScreenState();
 }
 
-class _FontSelectionScreenState extends State<FontSelectionScreen> {
-  String? _selectedFont;
-  double _selectedFontSize = 14.0;
-
-  @override
-  void initState() {
-    super.initState();
-    final deviceInfo = Provider.of<DeviceInfo>(context, listen: false);
-    _selectedFont = deviceInfo.font;
-    _selectedFontSize = deviceInfo.fontSize;
-  }
-
+class _FontSelectionScreenState extends ConsumerState<FontSelectionScreen> {
   static const String displayText = 'サンプルテキスト';
-
-  final List<String> fonts = [
-    'HannariMincho',
-    'KiwiMaru',
-    'TsukimiRounded',
-    'ShipporiMincho',
-    'ZenKurenaido', 
-    'KleeOne',
-    'Yomogi',
-    'KaiseiTokumin',
-    'KosugiMaru',
-    'YujiSyuku',
-    'Buildingsandundertherailwaytracks',
-    'RocknRollOne',
-    'DarumadropOne',
-    'HachiMaruPop',
-    'Stick',
-    'MonomaniacOne',
-    'YuseiMagic',
-    'SlacksideOne',
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final deviceInfo = ref.watch(deviceInfoProvider);
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text('フォントを選択', style: TextStyle(fontFamily: _selectedFont)),
+        title: Text(
+          'フォントを選択',
+          style: TextStyle(fontFamily: deviceInfo.font),
+        ),
       ),
       body: Column(
         children: [
@@ -62,20 +57,15 @@ class _FontSelectionScreenState extends State<FontSelectionScreen> {
                     'あいうえおアイウエオ朝昼夜',
                     style: TextStyle(
                       fontFamily: font,
-                      fontSize: _selectedFontSize,
+                      fontSize: deviceInfo.fontSize,
                     ),
                   ),
                   value: font,
-                  groupValue: _selectedFont,
+                  groupValue: deviceInfo.font,
                   onChanged: (value) {
-                    setState(() {
-                      _selectedFont = value;
-                      if (_selectedFont != null) {
-                      final deviceInfo =
-                          Provider.of<DeviceInfo>(context, listen: false);
-                      deviceInfo.setFont(_selectedFont!);
+                    if (value != null) {
+                      ref.read(deviceInfoProvider.notifier).updateFont(value);
                     }
-                    });
                   },
                 );
               },
@@ -85,22 +75,18 @@ class _FontSelectionScreenState extends State<FontSelectionScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Text('フォントサイズ: ${_selectedFontSize.toStringAsFixed(1)}'),
+                Text(
+                  'フォントサイズ: ${deviceInfo.fontSize.toStringAsFixed(1)}',
+                  style: TextStyle(fontFamily: deviceInfo.font),
+                ),
                 Slider(
-                  value: _selectedFontSize,
+                  value: deviceInfo.fontSize,
                   min: 10.0,
                   max: 20.0,
                   divisions: 10,
-                  label: _selectedFontSize.toStringAsFixed(1),
+                  label: deviceInfo.fontSize.toStringAsFixed(1),
                   onChanged: (value) {
-                    setState(() {
-                      _selectedFontSize = value;
-                      if (_selectedFont != null) {
-                      final deviceInfo =
-                          Provider.of<DeviceInfo>(context, listen: false);
-                      deviceInfo.setFontSize(_selectedFontSize);
-                    }
-                    });
+                    ref.read(deviceInfoProvider.notifier).updateFontSize(value);
                   },
                 ),
                 const SizedBox(height: 20),
@@ -112,3 +98,14 @@ class _FontSelectionScreenState extends State<FontSelectionScreen> {
     );
   }
 }
+
+// プレビューテキストのスタイルを提供するプロバイダー
+final previewTextStyleProvider = Provider<TextStyle>((ref) {
+  final deviceInfo = ref.watch(deviceInfoProvider);
+  return TextStyle(
+    fontFamily: deviceInfo.font,
+    fontSize: deviceInfo.fontSize,
+    letterSpacing: deviceInfo.letterSpacing,
+    height: deviceInfo.lineHeight,
+  );
+});

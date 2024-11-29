@@ -1,67 +1,47 @@
-class Diary {
-  int? id;
-  String title;
-  String content;
-  bool isFavorite;
-  List<String> tags;
-  DateTime createdAt;
-  DateTime updatedAt;
-  String emotionImage;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  Diary({
-    this.id,
-    required this.title,
-    required this.content,
-    this.isFavorite = false,
-    required this.tags,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.emotionImage,
-  });
+part 'diary.freezed.dart';
 
+@freezed
+class Diary with _$Diary {
+  const factory Diary({
+    int? id,
+    required String title,
+    required String content,
+    @Default(false) bool isFavorite,
+    required List<String> tags,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required String emotionImage,
+  }) = _Diary;
+
+  // カスタムコンストラクタを追加
+  const Diary._();
+
+  // SQLiteのMapからDiaryオブジェクトを生成するファクトリメソッド
+  factory Diary.fromMap(Map<String, dynamic> map, List<String> tags) {
+    return Diary(
+      id: map['id'] as int?,
+      title: map['title'] as String,
+      content: map['content'] as String,
+      isFavorite: (map['is_favorite'] as int) == 1,
+      tags: tags,
+      createdAt: DateTime.parse(map['created_at']).toLocal(),
+      updatedAt: DateTime.parse(map['updated_at']).toLocal(),
+      emotionImage: map['emotion_image'] as String,
+    );
+  }
+
+  // DairyオブジェクトをSQLite用のMapに変換するメソッド
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'title': title,
       'content': content,
       'is_favorite': isFavorite ? 1 : 0,
-      'created_at': createdAt.toUtc().toIso8601String(), // DateTimeを文字列に変換
+      'created_at': createdAt.toUtc().toIso8601String(),
       'updated_at': updatedAt.toUtc().toIso8601String(),
       'emotion_image': emotionImage,
     };
-  }
-
-  static Diary fromMap(Map<String, dynamic> map,List<String> tags) {
-    return Diary(
-      id: map['id'],
-      title: map['title'],
-      content: map['content'],
-      isFavorite: map['is_favorite'] == 1,
-      tags: tags.toList(),
-      createdAt: DateTime.parse(map['created_at']).toLocal(), // 文字列をDateTimeに変換
-      updatedAt: DateTime.parse(map['updated_at']).toLocal(),
-      emotionImage: map['emotion_image'],
-    );
-  }
-     Diary copyWith({
-    int? id,
-    String? title,
-    String? content,
-    bool? isFavorite,
-    List<String>? tags,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    String? emotionImage,
-  }) {
-    return Diary(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      content: content ?? this.content,
-      isFavorite: isFavorite ?? this.isFavorite,
-      tags: tags ?? List.from(this.tags),
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      emotionImage: emotionImage ?? this.emotionImage,
-    );
   }
 }

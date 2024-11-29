@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mind_journal/screen/component/DiaryListView.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mind_journal/database/diary_database.dart';
 import 'package:mind_journal/model/diary.dart';
+import 'package:mind_journal/screen/component/DiaryListView.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 // 定数の定義
 const Color primaryColor = Color(0xFFFE91A1);
@@ -15,72 +16,66 @@ const double fontSizeForNoDiaryMessage = 18.0;
 const double markerFontSize = 12.0;
 const double markerPadding = 4.0;
 
-class DiaryListWithCalendarScreen extends StatefulWidget {
+// 選択された日付を管理するプロバイダー
+final selectedDayProvider = StateProvider<DateTime?>((ref) => null);
+
+// フォーカスされた日付を管理するプロバイダー
+final focusedDayProvider = StateProvider<DateTime>((ref) => DateTime.now());
+
+// カレンダーフォーマットを管理するプロバイダー
+final calendarFormatProvider = StateProvider<CalendarFormat>((ref) => CalendarFormat.week);
+
+// 日付ごとの日記を管理するプロバイダー
+final diariesByDateProvider = Provider<Map<DateTime, List<Diary>>>((ref) {
+  final diaries = ref.watch(diariesProvider);
+  final diariesByDate = <DateTime, List<Diary>>{};
+  
+  for (var diary in diaries) {
+    final date = DateTime(
+      diary.createdAt.year,
+      diary.createdAt.month,
+      diary.createdAt.day
+    );
+    if (diariesByDate[date] == null) {
+      diariesByDate[date] = [];
+    }
+    diariesByDate[date]!.add(diary);
+  }
+  
+  return diariesByDate;
+});
+
+// 選択された日付の日記を取得するプロバイダー
+final selectedDateDiariesProvider = Provider<List<Diary>>((ref) {
+  final selectedDay = ref.watch(selectedDayProvider);
+  final diariesByDate = ref.watch(diariesByDateProvider);
+  
+  if (selectedDay == null) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return diariesByDate[today] ?? [];
+  }
+  
+  final selectedDate = DateTime(
+    selectedDay.year,
+    selectedDay.month,
+    selectedDay.day
+  );
+  return diariesByDate[selectedDate] ?? [];
+});
+
+class DiaryListWithCalendarScreen extends ConsumerWidget {
   const DiaryListWithCalendarScreen({super.key});
 
   @override
-  _DiaryListWithCalendarScreenState createState() =>
-      _DiaryListWithCalendarScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedDay = ref.watch(selectedDayProvider);
+    final focusedDay = ref.watch(focusedDayProvider);
+    final calendarFormat = ref.watch(calendarFormatProvider);
+    final diariesByDate = ref.watch(diariesByDateProvider);
+    final selectedDiaries = ref.watch(selectedDateDiariesProvider);
+    final diaryNotifier = ref.watch(diariesProvider.notifier);
 
-class _DiaryListWithCalendarScreenState
-    extends State<DiaryListWithCalendarScreen> {
-  Future<List<Diary>>? _diaryList;
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
-  Map<DateTime, List<Diary>> _diariesByDate = {};
-  CalendarFormat _calendarFormat = CalendarFormat.week;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchDiaries();
-  }
-
-  Future<void> _fetchDiaries() async {
-    final diaries = await DiaryDatabase.instance.readAllDiaries();
-    setState(() {
-      _diaryList = Future.value(diaries);
-      _diariesByDate = _groupDiariesByDate(diaries);
-    });
-  }
-
-  Map<DateTime, List<Diary>> _groupDiariesByDate(List<Diary> diaries) {
-    Map<DateTime, List<Diary>> diariesByDate = {};
-    for (var diary in diaries) {
-      final date = DateTime(
-          diary.createdAt.year, diary.createdAt.month, diary.createdAt.day);
-      if (diariesByDate[date] == null) {
-        diariesByDate[date] = [];
-      }
-      diariesByDate[date]!.add(diary);
-    }
-    return diariesByDate;
-  }
-
-  List<Diary> _getDiariesForSelectedDate() {
-    var now = DateTime.now();
-    var selectedDate = DateTime(now.year, now.month, now.day);
-    if (_selectedDay != null) {
-      selectedDate =
-          DateTime(_selectedDay!.year, _selectedDay!.month, _selectedDay!.day);
-    }
-    return _diariesByDate[selectedDate] ?? [];
-  }
-
-  Future<void> _toggleFavorite(Diary diary) async {
-    diary.isFavorite = !diary.isFavorite;
-    await DiaryDatabase.instance.updateDiary(diary);
-    await _fetchDiaries();
-  }
-
-  Future<void> _deleteDiary(int id) async {
-    await DiaryDatabase.instance.deleteDiary(id);
-    await _fetchDiaries();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(appBarHeight),
@@ -91,27 +86,23 @@ class _DiaryListWithCalendarScreenState
           TableCalendar(
             firstDay: DateTime.utc(2010, 10, 16),
             lastDay: DateTime.utc(2030, 3, 14),
-            focusedDay: _focusedDay,
+            focusedDay: focusedDay,
             selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day);
+              return isSameDay(selectedDay, day);
             },
             onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
+              ref.read(selectedDayProvider.notifier).state = selectedDay;
+              ref.read(focusedDayProvider.notifier).state = focusedDay;
             },
-            calendarFormat: _calendarFormat,
+            calendarFormat: calendarFormat,
             onFormatChanged: (format) {
-              setState(() {
-                _calendarFormat = format;
-              });
+              ref.read(calendarFormatProvider.notifier).state = format;
             },
             onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
+              ref.read(focusedDayProvider.notifier).state = focusedDay;
             },
             eventLoader: (day) {
-              return _diariesByDate[day] ?? [];
+              return diariesByDate[day] ?? [];
             },
             calendarBuilders: CalendarBuilders(
               markerBuilder: (context, day, events) {
@@ -127,38 +118,28 @@ class _DiaryListWithCalendarScreenState
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<Diary>>(
-              future: _diaryList,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                      child: CircularProgressIndicator(
-                          color: primaryColor));
-                } else if (snapshot.hasError) {
-                  return Center(
-                      child: Text('エラーが発生しました: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      noDiaryMessage,
-                      style: TextStyle(
-                        fontSize: fontSizeForNoDiaryMessage,
-                        color: errorColor,
-                      ),
+            child: ref.watch(diariesProvider).isEmpty
+              ? const Center(
+                  child: Text(
+                    noDiaryMessage,
+                    style: TextStyle(
+                      fontSize: fontSizeForNoDiaryMessage,
+                      color: errorColor,
                     ),
-                  );
-                }
-
-                final diaries = _getDiariesForSelectedDate();
-
-                return DiaryListView(
-                  diaries: diaries,
-                  onToggleFavorite: _toggleFavorite,
-                  onDeleteDiary: _deleteDiary,
+                  ),
+                )
+              : DiaryListView(
+                  diaries: selectedDiaries,
+                  onToggleFavorite: (diary) async {
+                    await diaryNotifier.updateDiary(
+                      diary.copyWith(isFavorite: !diary.isFavorite)
+                    );
+                  },
+                  onDeleteDiary: (id) async {
+                    await diaryNotifier.deleteDiary(id);
+                  },
                   isLineStyleUI: true,
-                );
-              },
-            ),
+                ),
           ),
         ],
       ),
