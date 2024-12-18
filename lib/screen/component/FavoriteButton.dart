@@ -27,7 +27,7 @@ class FavoriteButton extends ConsumerWidget {
         (state) => state.firstWhere((d) => d.id == diary.id).isFavorite));
 
     return Hero(
-      tag: 'favorite_button_${diary.id}', // ユニークなタグを設定
+      tag: 'favorite_button_${diary.id}',
       child: IconButton(
         icon: Icon(
           isFavorite ? Icons.favorite : Icons.favorite_border,

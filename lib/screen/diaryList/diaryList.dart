@@ -29,6 +29,10 @@ final filteredDiariesProvider = Provider<List<Diary>>((ref) {
   final showFavoritesOnly = ref.watch(showFavoritesOnlyProvider);
   final isDescending = ref.watch(isDescendingProvider);
 
+  if (diaries.isEmpty) {
+    return [];
+  }
+
   List<Diary> filteredDiaries = diaries;
 
   if (showFavoritesOnly) {

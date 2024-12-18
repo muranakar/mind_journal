@@ -16,18 +16,20 @@ class TagFilteredDiaryListScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text('検索結果: ${selectedTags.join(", ")}'),
       ),
-      body: diariesAsync.when(
-        data: (diaries) {
-          if (diaries.isEmpty) {
-            return const Center(child: Text('該当する日記がありません'));
-          }
-          return DiaryListView(
-            diaries: diaries,
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('エラー: $error')),
-      ),
+      body: selectedTags.isEmpty
+          ? const Center(child: Text('タグを選択してください'))
+          : diariesAsync.when(
+              data: (diaries) {
+                if (diaries.isEmpty) {
+                  return const Center(child: Text('該当する日記がありません'));
+                }
+                return DiaryListView(
+                  diaries: diaries,
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, _) => Center(child: Text('エラー: $error')),
+            ),
     );
   }
 }
