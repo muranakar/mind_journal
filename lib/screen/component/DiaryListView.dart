@@ -85,7 +85,6 @@ class DiaryListView extends ConsumerWidget {
 
   void _onDeleteDiary(WidgetRef ref, int id, BuildContext context) async {
     await ref.read(diariesProvider.notifier).deleteDiary(id);
-    Navigator.pop(context); // 削除後に前の画面に戻る
   }
 
   Widget _buildDiaryItem(
@@ -99,7 +98,7 @@ class DiaryListView extends ConsumerWidget {
     final dateString = _formatDate(diary.createdAt);
 
     return Dismissible(
-      key: Key(diary.id.toString()),
+      key: Key('diary_${diary.id}'), // ユニークなキーに変更
       direction: DismissDirection.endToStart,
       onDismissed: (_) => _onDeleteDiary(ref, diary.id!, context),
       background: Container(

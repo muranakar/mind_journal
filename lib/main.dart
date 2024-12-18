@@ -108,7 +108,7 @@ class DeviceInfoNotifier extends StateNotifier<DeviceInfo> {
   Future<void> loadSettings() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       state = DeviceInfo(
         font: prefs.getString(PrefsKeys.font) ?? 'HannariMincho',
         fontSize: prefs.getDouble(PrefsKeys.fontSize) ?? 14.0,
@@ -154,7 +154,8 @@ class DeviceInfoNotifier extends StateNotifier<DeviceInfo> {
 }
 
 // プロバイダー群
-final deviceInfoProvider = StateNotifierProvider<DeviceInfoNotifier, DeviceInfo>((ref) {
+final deviceInfoProvider =
+    StateNotifierProvider<DeviceInfoNotifier, DeviceInfo>((ref) {
   return DeviceInfoNotifier();
 });
 
@@ -221,7 +222,7 @@ class NavigationExample extends ConsumerWidget {
         ],
       ),
       floatingActionButton: _buildFloatingActionButton(
-        currentPageIndex, 
+        currentPageIndex,
         ref,
         colors,
       ),
@@ -230,18 +231,35 @@ class NavigationExample extends ConsumerWidget {
 
   ThemeColors _getThemeColors(bool isDarkMode) {
     return ThemeColors(
-      indicatorColor: isDarkMode ? UIConstants.darkIndicatorColor : UIConstants.lightIndicatorColor,
-      floatingButtonColor: isDarkMode ? UIConstants.darkFloatingButtonColor : UIConstants.lightFloatingButtonColor,
-      floatingButtonIconColor: isDarkMode ? UIConstants.darkFloatingButtonIconColor : UIConstants.lightFloatingButtonIconColor,
-      homeIconColor: isDarkMode ? UIConstants.darkHomeIconColor : UIConstants.lightHomeIconColor,
-      calendarIconColor: isDarkMode ? UIConstants.darkCalendarIconColor : UIConstants.lightCalendarIconColor,
-      listIconColor: isDarkMode ? UIConstants.darkListIconColor : UIConstants.lightListIconColor,
-      settingsIconColor: isDarkMode ? UIConstants.darkSettingsIconColor : UIConstants.lightSettingsIconColor,
-      tagSearchIconColor: isDarkMode ? UIConstants.darkListIconColor : UIConstants.lightListIconColor,
+      indicatorColor: isDarkMode
+          ? UIConstants.darkIndicatorColor
+          : UIConstants.lightIndicatorColor,
+      floatingButtonColor: isDarkMode
+          ? UIConstants.darkFloatingButtonColor
+          : UIConstants.lightFloatingButtonColor,
+      floatingButtonIconColor: isDarkMode
+          ? UIConstants.darkFloatingButtonIconColor
+          : UIConstants.lightFloatingButtonIconColor,
+      homeIconColor: isDarkMode
+          ? UIConstants.darkHomeIconColor
+          : UIConstants.lightHomeIconColor,
+      calendarIconColor: isDarkMode
+          ? UIConstants.darkCalendarIconColor
+          : UIConstants.lightCalendarIconColor,
+      listIconColor: isDarkMode
+          ? UIConstants.darkListIconColor
+          : UIConstants.lightListIconColor,
+      settingsIconColor: isDarkMode
+          ? UIConstants.darkSettingsIconColor
+          : UIConstants.lightSettingsIconColor,
+      tagSearchIconColor: isDarkMode
+          ? UIConstants.darkListIconColor
+          : UIConstants.lightListIconColor,
     );
   }
 
-  Widget _buildNavigationBar(WidgetRef ref, int currentPageIndex, ThemeColors colors) {
+  Widget _buildNavigationBar(
+      WidgetRef ref, int currentPageIndex, ThemeColors colors) {
     return NavigationBar(
       onDestinationSelected: (int index) {
         ref.read(currentPageProvider.notifier).state = index;
@@ -260,7 +278,8 @@ class NavigationExample extends ConsumerWidget {
         label: UIConstants.homeLabel,
       ),
       NavigationDestination(
-        icon: Icon(Icons.calendar_month_outlined, color: colors.calendarIconColor),
+        icon: Icon(Icons.calendar_month_outlined,
+            color: colors.calendarIconColor),
         label: UIConstants.calendarLabel,
       ),
       NavigationDestination(
@@ -283,8 +302,11 @@ class NavigationExample extends ConsumerWidget {
     WidgetRef ref,
     ThemeColors colors,
   ) {
-    if (currentPageIndex == 1 || currentPageIndex == 2 || currentPageIndex == 3) {
+    if (currentPageIndex == 1 ||
+        currentPageIndex == 2 ||
+        currentPageIndex == 3) {
       return FloatingActionButton(
+        heroTag: 'uniqueTagForFAB', // 一意のタグを追加
         onPressed: () {
           ref.read(currentPageProvider.notifier).state = 0;
         },
