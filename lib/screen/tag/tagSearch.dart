@@ -3,13 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mind_journal/database/diary_database.dart';
 import 'package:mind_journal/main.dart';
 import 'package:mind_journal/model/diary.dart';
-import 'package:mind_journal/screen/tag/tag_filtered_diarylist_screen.dart';
 
-// リフレッシュを強制するためのプロバイダー
+
 final tagUsageRefreshProvider = StateProvider<int>((ref) => 0);
 
-// 選択されたタグを管理するプロバイダー
-final selectedTagsProvider = StateNotifierProvider<SelectedTagsNotifier, List<String>>(
+final selectedTagsProvider =
+    StateNotifierProvider<SelectedTagsNotifier, List<String>>(
   (ref) => SelectedTagsNotifier(),
 );
 
@@ -29,15 +28,14 @@ class SelectedTagsNotifier extends StateNotifier<List<String>> {
   }
 }
 
-// フィルターされた日記を管理するプロバイダー
 
 final filteredDiariesProvider = FutureProvider<List<Diary>>((ref) {
   final selectedTags = ref.watch(selectedTagsProvider);
   if (selectedTags.isEmpty) return [];
-  
+
   // keepAliveを有効化
   ref.keepAlive();
-  
+
   final database = ref.watch(diaryDatabaseProvider);
   return database.filterDiariesBySelectedTags(selectedTags);
 });
@@ -58,7 +56,7 @@ class TagSearchScreen extends ConsumerWidget {
           if (selectedTags.isNotEmpty)
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context,Routes.tagFilteredList);
+                Navigator.pushNamed(context, Routes.tagFilteredList);
               },
               child: const Text('記録を検索'),
             ),
@@ -88,7 +86,9 @@ class TagSearchScreen extends ConsumerWidget {
                       label: Text('$tagName ($tagCount)'),
                       selected: isSelected,
                       onSelected: (_) {
-                        ref.read(selectedTagsProvider.notifier).toggleTag(tagName);
+                        ref
+                            .read(selectedTagsProvider.notifier)
+                            .toggleTag(tagName);
                       },
                     );
                   }).toList(),
@@ -109,7 +109,9 @@ class TagSearchScreen extends ConsumerWidget {
                   ...selectedTags.map((tag) => Chip(
                         label: Text(tag),
                         onDeleted: () {
-                          ref.read(selectedTagsProvider.notifier).toggleTag(tag);
+                          ref
+                              .read(selectedTagsProvider.notifier)
+                              .toggleTag(tag);
                         },
                       )),
                 ],

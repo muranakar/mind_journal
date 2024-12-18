@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mind_journal/database/diary_database.dart';
 import 'package:mind_journal/model/diary.dart';
 import 'package:mind_journal/provider/deviceInfo.dart';
 import 'package:mind_journal/screen/component/FavoriteButton.dart';
@@ -15,7 +16,8 @@ class DiaryListViewConstants {
 }
 
 // テーマカラーのプロバイダー
-final diaryListThemeProvider = Provider.family<DiaryListThemeColors, bool>((ref, isDarkMode) {
+final diaryListThemeProvider =
+    Provider.family<DiaryListThemeColors, bool>((ref, isDarkMode) {
   return DiaryListThemeColors(isDarkMode: isDarkMode);
 });
 
@@ -25,39 +27,42 @@ class DiaryListThemeColors {
 
   DiaryListThemeColors({required this.isDarkMode});
 
-  Color get backgroundColor => isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
+  Color get backgroundColor =>
+      isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
   Color get textColor => isDarkMode ? Colors.white : const Color(0xFF333333);
   Color get timeColor => isDarkMode ? Colors.grey : const Color(0xFF555555);
   Color get dateColor => isDarkMode ? Colors.grey : const Color(0xFF999999);
   Color get chipTextColor => const Color(0xFFFE91A1);
-  Color get chipBackgroundColor => isDarkMode ? const Color(0xFF3E3E3E) : const Color(0xFFFEF3F3);
-  Color get favoriteColor => isDarkMode ? const Color(0xFFFF6B6B) : const Color(0xFFFE91A1);
-  Color get favoriteBorderColor => isDarkMode ? Colors.grey : const Color(0xFF999999);
-  Color get deleteBackgroundColor => isDarkMode ? const Color(0xFFFF4444) : Colors.redAccent;
+  Color get chipBackgroundColor =>
+      isDarkMode ? const Color(0xFF3E3E3E) : const Color(0xFFFEF3F3);
+  Color get favoriteColor =>
+      isDarkMode ? const Color(0xFFFF6B6B) : const Color(0xFFFE91A1);
+  Color get favoriteBorderColor =>
+      isDarkMode ? Colors.grey : const Color(0xFF999999);
+  Color get deleteBackgroundColor =>
+      isDarkMode ? const Color(0xFFFF4444) : Colors.redAccent;
 }
 
 class DiaryListView extends ConsumerWidget {
   final List<Diary> diaries;
-  final Function(Diary) onToggleFavorite;
-  final Function(int) onDeleteDiary;
   final bool isLineStyleUI;
 
   const DiaryListView({
     super.key,
     required this.diaries,
-    required this.onToggleFavorite,
-    required this.onDeleteDiary,
     this.isLineStyleUI = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deviceInfo = ref.watch(deviceInfoProvider);
-    final themeColors = ref.watch(diaryListThemeProvider(deviceInfo.isDarkMode));
+    final themeColors =
+        ref.watch(diaryListThemeProvider(deviceInfo.isDarkMode));
 
     return ListView.builder(
       padding: EdgeInsets.symmetric(
-        vertical: deviceInfo.lineHeight * DiaryListViewConstants.verticalPadding,
+        vertical:
+            deviceInfo.lineHeight * DiaryListViewConstants.verticalPadding,
         horizontal: DiaryListViewConstants.horizontalPadding,
       ),
       itemCount: diaries.length,
@@ -68,9 +73,19 @@ class DiaryListView extends ConsumerWidget {
           diary,
           deviceInfo,
           themeColors,
+          ref,
         );
       },
     );
+  }
+
+  void _onToggleFavorite(WidgetRef ref, Diary diary) async {
+    await ref.read(diariesProvider.notifier).toggleFavorite(diary);
+  }
+
+  void _onDeleteDiary(WidgetRef ref, int id, BuildContext context) async {
+    await ref.read(diariesProvider.notifier).deleteDiary(id);
+    Navigator.pop(context); // 削除後に前の画面に戻る
   }
 
   Widget _buildDiaryItem(
@@ -78,6 +93,7 @@ class DiaryListView extends ConsumerWidget {
     Diary diary,
     DeviceInfo deviceInfo,
     DiaryListThemeColors colors,
+    WidgetRef ref,
   ) {
     final timeString = _formatTime(diary.createdAt);
     final dateString = _formatDate(diary.createdAt);
@@ -85,179 +101,170 @@ class DiaryListView extends ConsumerWidget {
     return Dismissible(
       key: Key(diary.id.toString()),
       direction: DismissDirection.endToStart,
-      onDismissed: (_) => onDeleteDiary(diary.id!),
-      background: _buildDismissBackground(deviceInfo, colors),
+      onDismissed: (_) => _onDeleteDiary(ref, diary.id!, context),
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(
+          right: DiaryListViewConstants.horizontalPadding,
+        ),
+        color: colors.deleteBackgroundColor,
+        child: Icon(
+          Icons.delete,
+          color: Colors.white,
+          size: deviceInfo.fontSize * 1.5,
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           vertical: DiaryListViewConstants.verticalPadding,
         ),
         child: isLineStyleUI
-            ? _buildLineStyleItem(diary, timeString, deviceInfo, colors)
-            : _buildBubbleStyleItem(diary, dateString, deviceInfo, colors),
-      ),
-    );
-  }
-
-  Widget _buildDismissBackground(DeviceInfo deviceInfo, DiaryListThemeColors colors) {
-    return Container(
-      alignment: Alignment.centerRight,
-      padding: const EdgeInsets.only(
-        right: DiaryListViewConstants.horizontalPadding,
-      ),
-      color: colors.deleteBackgroundColor,
-      child: Icon(
-        Icons.delete,
-        color: Colors.white,
-        size: deviceInfo.fontSize * 1.5,
-      ),
-    );
-  }
-
-  Widget _buildLineStyleItem(
-    Diary diary,
-    String timeString,
-    DeviceInfo deviceInfo,
-    DiaryListThemeColors colors,
-  ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _buildTimeContainer(timeString, deviceInfo, colors),
-        const SizedBox(width: DiaryListViewConstants.horizontalPadding / 2),
-        Expanded(
-          child: _buildContentContainer(
-            diary.content,
-            null,
-            deviceInfo,
-            colors,
-            showDate: false,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBubbleStyleItem(
-    Diary diary,
-    String dateString,
-    DeviceInfo deviceInfo,
-    DiaryListThemeColors colors,
-  ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: _buildContentContainer(
-            diary.content,
-            dateString,
-            deviceInfo,
-            colors,
-            showDate: true,
-            diary: diary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTimeContainer(
-    String timeString,
-    DeviceInfo deviceInfo,
-    DiaryListThemeColors colors,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(DiaryListViewConstants.bubblePadding),
-      decoration: _buildContainerDecoration(colors),
-      child: Text(
-        timeString,
-        style: TextStyle(
-          color: colors.timeColor,
-          fontSize: deviceInfo.fontSize * 0.5,
-          fontFamily: deviceInfo.font,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContentContainer(
-    String content,
-    String? dateString,
-    DeviceInfo deviceInfo,
-    DiaryListThemeColors colors, {
-    required bool showDate,
-    Diary? diary,
-  }) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(
-        DiaryListViewConstants.bubblePadding,
-        DiaryListViewConstants.bubblePadding,
-        0,
-        0,
-      ),
-      decoration: _buildContainerDecoration(colors),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            content,
-            style: TextStyle(
-              color: colors.textColor,
-              fontSize: deviceInfo.fontSize * 0.85,
-              fontFamily: deviceInfo.font,
-              height: deviceInfo.lineHeight,
-              letterSpacing: deviceInfo.letterSpacing,
-            ),
-          ),
-          if (showDate && dateString != null && diary != null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  dateString,
-                  style: TextStyle(
-                    color: colors.dateColor,
-                    fontSize: deviceInfo.fontSize * 0.6,
-                    fontFamily: deviceInfo.font,
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(
+                        DiaryListViewConstants.bubblePadding),
+                    decoration: BoxDecoration(
+                      color: colors.backgroundColor,
+                      borderRadius: BorderRadius.circular(
+                          DiaryListViewConstants.borderRadius),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          offset: Offset(0, 2),
+                          blurRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      timeString,
+                      style: TextStyle(
+                        color: colors.timeColor,
+                        fontSize: deviceInfo.fontSize * 0.5,
+                        fontFamily: deviceInfo.font,
+                      ),
+                    ),
                   ),
-                ),
-                FavoriteButton(
-                  diary: diary,
-                  onToggleFavorite: onToggleFavorite,
-                  favoriteColor: colors.favoriteColor,
-                  favoriteBorderColor: colors.favoriteBorderColor,
-                  iconPadding: DiaryListViewConstants.iconPadding,
-                  fontSize: deviceInfo.fontSize,
-                ),
-              ],
-            ),
-        ],
+                  const SizedBox(
+                      width: DiaryListViewConstants.horizontalPadding / 2),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(
+                        DiaryListViewConstants.bubblePadding,
+                        DiaryListViewConstants.bubblePadding,
+                        0,
+                        0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colors.backgroundColor,
+                        borderRadius: BorderRadius.circular(
+                            DiaryListViewConstants.borderRadius),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            offset: Offset(0, 2),
+                            blurRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            diary.content,
+                            style: TextStyle(
+                              color: colors.textColor,
+                              fontSize: deviceInfo.fontSize * 0.85,
+                              fontFamily: deviceInfo.font,
+                              height: deviceInfo.lineHeight,
+                              letterSpacing: deviceInfo.letterSpacing,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(
+                        DiaryListViewConstants.bubblePadding,
+                        DiaryListViewConstants.bubblePadding,
+                        0,
+                        0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colors.backgroundColor,
+                        borderRadius: BorderRadius.circular(
+                            DiaryListViewConstants.borderRadius),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            offset: Offset(0, 2),
+                            blurRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            diary.content,
+                            style: TextStyle(
+                              color: colors.textColor,
+                              fontSize: deviceInfo.fontSize * 0.85,
+                              fontFamily: deviceInfo.font,
+                              height: deviceInfo.lineHeight,
+                              letterSpacing: deviceInfo.letterSpacing,
+                            ),
+                          ),
+                          if (dateString != null)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  dateString,
+                                  style: TextStyle(
+                                    color: colors.dateColor,
+                                    fontSize: deviceInfo.fontSize * 0.6,
+                                    fontFamily: deviceInfo.font,
+                                  ),
+                                ),
+                                FavoriteButton(
+                                  diary: diary,
+                                  favoriteColor: colors.favoriteColor,
+                                  favoriteBorderColor:
+                                      colors.favoriteBorderColor,
+                                  iconPadding:
+                                      DiaryListViewConstants.iconPadding,
+                                  fontSize: deviceInfo.fontSize,
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
       ),
-    );
-  }
-
-  BoxDecoration _buildContainerDecoration(DiaryListThemeColors colors) {
-    return BoxDecoration(
-      color: colors.backgroundColor,
-      borderRadius: BorderRadius.circular(DiaryListViewConstants.borderRadius),
-      boxShadow: const [
-        BoxShadow(
-          color: Colors.black12,
-          offset: Offset(0, 2),
-          blurRadius: 5,
-        ),
-      ],
     );
   }
 
   String _formatTime(DateTime dateTime) {
     return "${dateTime.hour.toString().padLeft(2, '0')}:"
-           "${dateTime.minute.toString().padLeft(2, '0')}";
+        "${dateTime.minute.toString().padLeft(2, '0')}";
   }
 
   String _formatDate(DateTime dateTime) {
     return "${dateTime.year}/"
-           "${dateTime.month.toString().padLeft(2, '0')}/"
-           "${dateTime.day.toString().padLeft(2, '0')} "
-           "${_formatTime(dateTime)}";
+        "${dateTime.month.toString().padLeft(2, '0')}/"
+        "${dateTime.day.toString().padLeft(2, '0')} "
+        "${_formatTime(dateTime)}";
   }
 }

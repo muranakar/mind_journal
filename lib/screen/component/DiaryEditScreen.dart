@@ -7,7 +7,7 @@ class DiaryEditScreen extends StatefulWidget {
   final Diary diary;
   final Function(Diary) onSave;
 
-  const DiaryEditScreen({Key? key, required this.diary, required this.onSave}) : super(key: key);
+  const DiaryEditScreen({super.key, required this.diary, required this.onSave});
 
   @override
   _DiaryEditScreenState createState() => _DiaryEditScreenState();

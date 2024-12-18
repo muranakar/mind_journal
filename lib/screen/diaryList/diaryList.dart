@@ -31,12 +31,10 @@ final filteredDiariesProvider = Provider<List<Diary>>((ref) {
 
   List<Diary> filteredDiaries = diaries;
 
-  // お気に入りフィルター
   if (showFavoritesOnly) {
     filteredDiaries = filteredDiaries.where((diary) => diary.isFavorite).toList();
   }
 
-  // 検索クエリによるフィルター
   if (searchQuery.isNotEmpty) {
     final query = searchQuery.toLowerCase();
     filteredDiaries = filteredDiaries.where((diary) {
@@ -47,7 +45,6 @@ final filteredDiariesProvider = Provider<List<Diary>>((ref) {
     }).toList();
   }
 
-  // ソート
   filteredDiaries.sort((a, b) => isDescending
       ? b.createdAt.compareTo(a.createdAt)
       : a.createdAt.compareTo(b.createdAt));
@@ -117,14 +114,6 @@ class DiaryListScreen extends ConsumerWidget {
               )
             : DiaryListView(
                 diaries: filteredDiaries,
-                onToggleFavorite: (diary) async {
-                  await diaryNotifier.updateDiary(
-                    diary.copyWith(isFavorite: !diary.isFavorite),
-                  );
-                },
-                onDeleteDiary: (id) async {
-                  await diaryNotifier.deleteDiary(id);
-                },
               ),
       ),
     );

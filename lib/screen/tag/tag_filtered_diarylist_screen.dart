@@ -1,6 +1,4 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mind_journal/database/diary_database.dart';
 import 'package:mind_journal/screen/component/DiaryListView.dart';
@@ -25,13 +23,6 @@ class TagFilteredDiaryListScreen extends ConsumerWidget {
           }
           return DiaryListView(
             diaries: diaries,
-            onToggleFavorite: (diary) async {
-              await ref.read(diariesProvider.notifier).toggleFavorite(diary);
-            },
-            onDeleteDiary: (id) async {
-              await ref.read(diariesProvider.notifier).deleteDiary(id);
-              Navigator.pop(context); // 削除後に前の画面に戻る
-            },
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),

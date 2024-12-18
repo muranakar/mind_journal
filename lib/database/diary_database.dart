@@ -27,7 +27,7 @@ class DiaryDatabase {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-    
+
     return await openDatabase(
       path,
       version: 1,
@@ -71,14 +71,25 @@ class DiaryDatabase {
 
   Future<void> _insertInitialTags(Database db) async {
     const List<String> initialTags = [
-      '不安', '喜び', '怒り', '悲しみ', 'イライラ', 'モヤモヤ',
-      '悔しい', '感謝', '希望', '嬉しい', '仕事', '友達', '家族', '趣味'
+      '不安',
+      '喜び',
+      '怒り',
+      '悲しみ',
+      'イライラ',
+      'モヤモヤ',
+      '悔しい',
+      '感謝',
+      '希望',
+      '嬉しい',
+      '仕事',
+      '友達',
+      '家族',
+      '趣味'
     ];
 
-    final count = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM tags')
-    );
-    
+    final count =
+        Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM tags'));
+
     if (count == 0) {
       for (String tag in initialTags) {
         await db.insert('tags', {'name': tag});
@@ -89,11 +100,11 @@ class DiaryDatabase {
   // 日記の作成
   Future<int> createDiary(Diary diary) async {
     final db = await database;
-    
+
     return await db.transaction((txn) async {
       // 日記を保存
       final id = await txn.insert('diaries', diary.toMap());
-      
+
       // タグを保存
       for (String tagName in diary.tags) {
         // タグが存在しない場合は新規作成
@@ -116,7 +127,7 @@ class DiaryDatabase {
           'tag_id': tagId,
         });
       }
-      
+
       return id;
     });
   }
@@ -125,7 +136,7 @@ class DiaryDatabase {
   Future<List<Diary>> readAllDiaries() async {
     final db = await database;
     final diaries = await db.query('diaries', orderBy: 'created_at DESC');
-    
+
     return Future.wait(diaries.map((diary) async {
       final tags = await getTagsForDiary(diary['id'] as int);
       return Diary.fromMap(diary, tags);
@@ -135,7 +146,7 @@ class DiaryDatabase {
   // 特定の日記のタグを取得
   Future<List<String>> getTagsForDiary(int diaryId) async {
     final db = await database;
-    
+
     final result = await db.rawQuery('''
       SELECT tags.name
       FROM tags
@@ -149,7 +160,7 @@ class DiaryDatabase {
   // 日記の更新
   Future<void> updateDiary(Diary diary) async {
     final db = await database;
-    
+
     await db.transaction((txn) async {
       // 日記を更新
       await txn.update(
@@ -192,7 +203,7 @@ class DiaryDatabase {
   // 日記の削除
   Future<void> deleteDiary(int id) async {
     final db = await database;
-    
+
     await db.transaction((txn) async {
       // 日記とタグの関連を削除
       await txn.delete(
@@ -221,7 +232,7 @@ class DiaryDatabase {
   // タグを使用頻度順に取得
   Future<List<String>> fetchAllTagsSortedByUsage() async {
     final db = await database;
-    
+
     final result = await db.rawQuery('''
       SELECT DISTINCT tags.name
       FROM tags
@@ -242,7 +253,7 @@ class DiaryDatabase {
   // タグの使用回数を含めて取得
   Future<List<Map<String, dynamic>>> fetchTagsWithUsageCount() async {
     final db = await database;
-    
+
     final result = await db.rawQuery('''
       SELECT 
         tags.name,
@@ -253,22 +264,22 @@ class DiaryDatabase {
       ORDER BY count DESC, tags.name ASC
     ''');
 
-    return result.map((row) => {
-      'name': row['name'] as String,
-      'count': row['count'] as int,
-    }).toList();
+    return result
+        .map((row) => {
+              'name': row['name'] as String,
+              'count': row['count'] as int,
+            })
+        .toList();
   }
 
   // キーワードで日記を検索
   Future<List<Diary>> searchDiaries(String keyword) async {
     final db = await database;
-    
-    final diaries = await db.query(
-      'diaries',
-      where: 'content LIKE ? OR title LIKE ?',
-      whereArgs: ['%$keyword%', '%$keyword%'],
-      orderBy: 'created_at DESC'
-    );
+
+    final diaries = await db.query('diaries',
+        where: 'content LIKE ? OR title LIKE ?',
+        whereArgs: ['%$keyword%', '%$keyword%'],
+        orderBy: 'created_at DESC');
 
     return Future.wait(diaries.map((diary) async {
       final tags = await getTagsForDiary(diary['id'] as int);
@@ -279,10 +290,10 @@ class DiaryDatabase {
   // タグで日記をフィルター
   Future<List<Diary>> getDiariesByTags(List<String> tagNames) async {
     if (tagNames.isEmpty) return [];
-    
+
     final db = await database;
     final placeholders = List.filled(tagNames.length, '?').join(',');
-    
+
     final diaries = await db.rawQuery('''
       SELECT DISTINCT d.*
       FROM diaries d
@@ -298,9 +309,10 @@ class DiaryDatabase {
     }));
   }
 
-  Future<List<Diary>> filterDiariesBySelectedTags(List<String> selectedTags) async {
+  Future<List<Diary>> filterDiariesBySelectedTags(
+      List<String> selectedTags) async {
     final db = await database;
-print(1000);
+    print(1000);
     if (selectedTags.isEmpty) {
       // タグが選択されていない場合は全ての日記を取得
       final result = await db.query('diaries');
@@ -321,7 +333,7 @@ print(1000);
       GROUP BY diaries.id
       HAVING COUNT(DISTINCT tags.name) = ?
     ''', [...selectedTags, selectedTags.length]);
-print(2);
+    print(2);
     // 各日記のタグを取得して Diary オブジェクトを作成
     return Future.wait(result.map((map) async {
       final tags = await getTagsForDiary(map['id'] as int);
@@ -342,7 +354,8 @@ print(2);
 }
 
 // 日記一覧を提供するプロバイダー
-final diariesProvider = StateNotifierProvider<DiaryNotifier, List<Diary>>((ref) {
+final diariesProvider =
+    StateNotifierProvider<DiaryNotifier, List<Diary>>((ref) {
   final database = ref.watch(diaryDatabaseProvider);
   return DiaryNotifier(database);
 });
@@ -354,7 +367,8 @@ final tagsProvider = FutureProvider<List<String>>((ref) async {
 });
 
 // タグの使用状況を提供するプロバイダー
-final tagUsageProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final tagUsageProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final database = ref.watch(diaryDatabaseProvider);
   return database.fetchTagsWithUsageCount();
 });

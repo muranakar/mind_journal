@@ -23,25 +23,23 @@ final selectedDayProvider = StateProvider<DateTime?>((ref) => null);
 final focusedDayProvider = StateProvider<DateTime>((ref) => DateTime.now());
 
 // カレンダーフォーマットを管理するプロバイダー
-final calendarFormatProvider = StateProvider<CalendarFormat>((ref) => CalendarFormat.week);
+final calendarFormatProvider =
+    StateProvider<CalendarFormat>((ref) => CalendarFormat.week);
 
 // 日付ごとの日記を管理するプロバイダー
 final diariesByDateProvider = Provider<Map<DateTime, List<Diary>>>((ref) {
   final diaries = ref.watch(diariesProvider);
   final diariesByDate = <DateTime, List<Diary>>{};
-  
+
   for (var diary in diaries) {
     final date = DateTime(
-      diary.createdAt.year,
-      diary.createdAt.month,
-      diary.createdAt.day
-    );
+        diary.createdAt.year, diary.createdAt.month, diary.createdAt.day);
     if (diariesByDate[date] == null) {
       diariesByDate[date] = [];
     }
     diariesByDate[date]!.add(diary);
   }
-  
+
   return diariesByDate;
 });
 
@@ -49,18 +47,15 @@ final diariesByDateProvider = Provider<Map<DateTime, List<Diary>>>((ref) {
 final selectedDateDiariesProvider = Provider<List<Diary>>((ref) {
   final selectedDay = ref.watch(selectedDayProvider);
   final diariesByDate = ref.watch(diariesByDateProvider);
-  
+
   if (selectedDay == null) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     return diariesByDate[today] ?? [];
   }
-  
-  final selectedDate = DateTime(
-    selectedDay.year,
-    selectedDay.month,
-    selectedDay.day
-  );
+
+  final selectedDate =
+      DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
   return diariesByDate[selectedDate] ?? [];
 });
 
@@ -74,7 +69,6 @@ class DiaryListWithCalendarScreen extends ConsumerWidget {
     final calendarFormat = ref.watch(calendarFormatProvider);
     final diariesByDate = ref.watch(diariesByDateProvider);
     final selectedDiaries = ref.watch(selectedDateDiariesProvider);
-    final diaryNotifier = ref.watch(diariesProvider.notifier);
 
     return Scaffold(
       appBar: PreferredSize(
@@ -119,27 +113,19 @@ class DiaryListWithCalendarScreen extends ConsumerWidget {
           ),
           Expanded(
             child: ref.watch(diariesProvider).isEmpty
-              ? const Center(
-                  child: Text(
-                    noDiaryMessage,
-                    style: TextStyle(
-                      fontSize: fontSizeForNoDiaryMessage,
-                      color: errorColor,
+                ? const Center(
+                    child: Text(
+                      noDiaryMessage,
+                      style: TextStyle(
+                        fontSize: fontSizeForNoDiaryMessage,
+                        color: errorColor,
+                      ),
                     ),
+                  )
+                : DiaryListView(
+                    diaries: selectedDiaries,
+                    isLineStyleUI: true,
                   ),
-                )
-              : DiaryListView(
-                  diaries: selectedDiaries,
-                  onToggleFavorite: (diary) async {
-                    await diaryNotifier.updateDiary(
-                      diary.copyWith(isFavorite: !diary.isFavorite)
-                    );
-                  },
-                  onDeleteDiary: (id) async {
-                    await diaryNotifier.deleteDiary(id);
-                  },
-                  isLineStyleUI: true,
-                ),
           ),
         ],
       ),
